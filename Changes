@@ -1,5 +1,8 @@
 Revision history for Perl extension XML::TMX.
 
+0.04   Nov 11, 2003
+	- use xml:lang instead of lang if the first exists
+
 0.03   Oct 12, 2003
 	- Many bugs were found. Here is a working version (we hope)
 

@@ -44,7 +44,7 @@ sub for_tu {
 		    my %tu = map { ( $_->[0] => $_->[1] ) } @$c;
 		    &{$code}(\%tu,\%v);
 		  },
-		  tuv => sub { [$v{lang}, $c] },
+		  tuv => sub { [$v{lang} || $v{'xml:lang'}, $c] },
 		  seg => sub { $c },
 		  body => sub { $c },
 		  tmx => sub { $c },

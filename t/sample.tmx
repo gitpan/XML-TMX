@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE tmx SYSTEM "tmx11.dtd">
 <tmx version="version 1.1">
-<header o-tmf="TW4Win 2.0 Format" creationtool="MyTool" adminlang="EN-US" creationdate="20020312T164816Z" creationtoolversion="5.0" srclang="EN-GB" segtype="sentence" datatype="html">
+<header o-tmf="TW4Win 2.0 Format" creationtool="MyTool" adminxml:lang="EN-US" creationdate="20020312T164816Z" creationtoolversion="5.0" srcxml:lang="EN-GB" segtype="sentence" datatype="html">
 </header>
 <body>
 
  <tu creationid="ALIGN!" creationdate="20020312T163221Z">
-  <tuv lang="EN-GB">
+  <tuv xml:lang="EN-GB">
   <seg>From Paul, called to be an apostle of Christ Jesus by the will of God, and from Sosthenes, our brother, </seg>
   </tuv>
   <tuv lang="PT-PT">
@@ -14,7 +14,7 @@
   </tuv>
  </tu>
  <tu creationid="ALIGN!" creationdate="20020312T163221Z">
-  <tuv lang="EN-GB">
+  <tuv xml:lang="EN-GB">
   <seg>to God's Church which is in Corinth; to you whom God has sanctified in Christ Jesus and called to be holy, together with those who everywhere call upon the name of our Lord Christ Jesus, their Lord and ours. 
 </seg>
   </tuv>
@@ -23,7 +23,7 @@
   </tuv>
  </tu>
  <tu creationid="ALIGN!" creationdate="20020312T163221Z">
-  <tuv lang="EN-GB">
+  <tuv xml:lang="EN-GB">
   <seg>Receive grace and peace from God our Father, and Christ Jesus our Lord.
 </seg>
   </tuv>
@@ -35,7 +35,7 @@
   </tuv>
  </tu>
  <tu creationid="ALIGN!" creationdate="20020312T163221Z">
-  <tuv lang="EN-GB">
+  <tuv xml:lang="EN-GB">
   <seg>I give thanks constantly to my God for you and for the grace of God given to you in Christ Jesus. </seg>
   </tuv>
   <tuv lang="PT-PT">
@@ -43,7 +43,7 @@
   </tuv>
  </tu>
  <tu creationid="ALIGN!" creationdate="20020312T163221Z">
-  <tuv lang="EN-GB">
+  <tuv xml:lang="EN-GB">
   <seg>For you have been fully enriched in him with words as well as with knowledge, </seg>
   </tuv>
   <tuv lang="PT-PT">
@@ -51,7 +51,7 @@
   </tuv>
  </tu>
  <tu creationid="ALIGN!" creationdate="20020312T163221Z">
-  <tuv lang="EN-GB">
+  <tuv xml:lang="EN-GB">
   <seg>even as the testimony concerning Christ was confirmed in you. </seg>
   </tuv>
   <tuv lang="PT-PT">
@@ -59,7 +59,7 @@
   </tuv>
  </tu>
  <tu creationid="ALIGN!" creationdate="20020312T163221Z">
-  <tuv lang="EN-GB">
+  <tuv xml:lang="EN-GB">
   <seg>You do not lack any spiritual gift and only await the glorious coming of Christ Jesus, our Lord. </seg>
   </tuv>
   <tuv lang="PT-PT">
