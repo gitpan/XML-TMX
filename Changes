@@ -1,5 +1,11 @@
 Revision history for Perl extension XML::TMX.
 
+0.10   Sep 30, 2004 
+0.09    - problem with upload to CPAN;
+0.09    - problem with upload to CPAN;
+	- added pod and pod-coverage tests;
+        - added documentation;
+
 0.07   May 18, 2004
         - option to remove sub-tags is now global and not specific for
           the for_tu command;

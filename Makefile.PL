@@ -10,6 +10,8 @@ WriteMakefile(
 				      scripts/tmx2html
 				      scripts/tmx2tmx!],
 	      'PREREQ_PM'      => {
+				   'Test::Pod'   => 1.00,
+				   'Test::Pod::Coverage' => 0.08,
 				   'XML::DT'     => 0.27,
 				   'Exporter'    => 0,
 				  },

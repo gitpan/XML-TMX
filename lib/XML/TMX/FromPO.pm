@@ -1,5 +1,4 @@
 package XML::TMX::FromPO;
-# vim:sw=3:ts=3:et:
 
 use 5.004;
 use warnings;
@@ -32,9 +31,9 @@ This module can be used to generate TMX files from a group of PO files.
 
 The following methods are available:
 
-=over
+=head2 new
 
-=item $tmx = B<new> XML::TMX::FromPO();
+  $tmx = new XML::TMX::FromPO();
 
 Creates a new XML::TMX::FromPO object. Please check the L<COMMON
 CONFIGURATION> section for details on the options.
@@ -48,9 +47,9 @@ sub new {
    $self->{LANG} = undef;
    $self->{OUTPUT} = undef;
    $self->{DEBUG} = 0;
-   
+
    __common_conf($self, @_);
-      
+
    unless(defined($self->{CONVER})) {
       if(system('recode >/dev/null 2>&1')) {
          $self->{CONVERT} = 'iconv -f %t -t utf8 < %f';
@@ -65,10 +64,16 @@ sub new {
 }
 
 
+=head2 parse_dir
+
+TODO: Document method
+
+=cut
+
 sub parse_dir {
    my $self = shift;
    my $dir = shift;
-   
+
    __common_conf($self, @_);
 
    # check if directory is readable
@@ -109,11 +114,17 @@ sub __check_lang {
 
 sub __add_en {
    my $self = shift;
-   
+
    for my $str (keys %{$self->{TMX}}) {
       $self->{TMX}{$str}{'en'} = $str;
    }
 }
+
+=head2 create_tmx
+
+TODO: Document function
+
+=cut
 
 sub create_tmx {
    my $self = shift;
@@ -122,7 +133,7 @@ sub create_tmx {
    __common_conf($self, @_);
 
    my $n_langs = @{$self->{LANG}};
-   
+
    if(defined($self->{OUTPUT})) {
       $tmx->start_tmx(ID => 'XML::TMX::FromPO', OUTPUT => $self->{OUTPUT});
    } else {
@@ -137,6 +148,12 @@ sub create_tmx {
    $tmx->end_tmx();
 }
 
+=head2 clean_tmx
+
+TODO: Document method
+
+=cut
+
 sub clean_tmx {
    my $self = shift;
    $self->{TMX} = {};
@@ -150,7 +167,7 @@ sub __make_tu {
    if(!defined($self->{LANG})) {
       return($block);
    }
-   
+
    for my $lang (keys %$block) {
       $reg->{$lang} = $block->{$lang} if(__check_lang($self, $lang));
    }
@@ -161,11 +178,11 @@ sub __processa {
    my $self = shift;
    my $a = shift;
    my $l = shift;
- 
+
    local $/ = "\nmsgid";
    #local $/ = "\nmsgid ";
    print STDERR "$a\n" if($self->{DEBUG});
- 
+
    my $codeline = `grep -i Content-Type $a | grep -i charset`;
    my $code = "?";
 
@@ -175,12 +192,12 @@ sub __processa {
 
    $convert =~ s/\%t/$code/i;
    $convert =~ s/\%f/$a/i;
-   
+
    if($code eq "?" || $code =~ /utf-?8/i ) { open(F,$a) or die;}
    else { open(F,"$convert|") or die;}
 
    my $mi = 0;
-   
+
    while(<F>) {
       chomp;
       next if($mi == 0 && /^msgid\s+""/);
@@ -197,11 +214,11 @@ sub __processa {
       $m2 =~ s/(^\s*"|"\s*$)//g;
       $m2 =~ s/("\s*\n\s*")/ /g;
 
-      unless($m1) { 
+      unless($m1) {
          warn "\n====M1 vazio... \n$m1\n=$m2\n";
          next;
       }
-      
+
       if($m2) {
          $self->{TMX}{$m1}{$l} = $m2;
       } # || "????? $m1";
@@ -227,7 +244,7 @@ sub __limpa {
    # um teste realizado com os po's do evolution mostrou uma redução do
    # ficheiro final de 12M para 8,6M, uma análise com o diff aos dumps
    # permitiu ver que grande parte do ''lixo'' eram de (1)
-                                                                                
+
    for my $h1 (keys %{$self->{TMX}}) {
       if($h1 =~ /[a-z][a-z]/i) {
          for my $h2 (keys %{$self->{TMX}{$h1}}) {
@@ -252,20 +269,35 @@ These configuration options can be passed to all methods in the module:
 
 =over
 
-=cut
-sub __common_conf {
-   my $self = shift;
-   my %opt = @_;
-
-=pod
-
 =item LANG => 'list'
 
 A case insensitive list of regular expression separated by whitespaces
 that matches the code of the languages that are to be processed.
 Defaults to all.
 
+=item CONVERT => 'iconv -f %t -t utf8 < %f'
+
+A string that contains the command to convert a file (%f) from some
+charset (%t) to Unicode. If none is specified, the module tries to
+use L<recode(1)>, if it fails then the module defaults to L<iconv(1)>.
+
+=item OUTPUT => 'x.tmx'
+
+The name of the output file. If none is specified it defaults to the
+standard output.
+
+=item DEBUG => 1
+
+Activate debugging information. Defaults to 0.
+
+=back
+
 =cut
+
+sub __common_conf {
+   my $self = shift;
+   my %opt = @_;
+
    if(defined($opt{LANG})) {
       my @list;
       for my $l (sort(split(/\s+/, $opt{LANG}))) {
@@ -274,60 +306,10 @@ Defaults to all.
       $self->{LANG} = \@list if(@list);
    }
 
-=pod
-
-=item CONVERT => 'iconv -f %t -t utf8 < %f'
-
-A string that contains the command to convert a file (%f) from some
-charset (%t) to Unicode. If none is specified, the module tries to
-use L<recode(1)>, if it fails then the module defaults to L<iconv(1)>.
-
-=cut
-   if(defined($opt{CONVERT})) {
-      $self->{CONVERT} = $opt{CONVERT};
-   }
-
-=pod
-
-=item OUTPUT => 'x.tmx'
-
-The name of the output file. If none is specified it defaults to the
-standard output.
-
-=cut
-   if(defined($opt{OUTPUT})) {
-      $self->{OUTPUT} = $opt{OUTPUT};
-   }
-
-=pod
-
-=item DEBUG => 1
-
-Activate debugging information. Defaults to 0.
-
-=cut
-   if(defined($opt{DEBUG})) {
-      $self->{DEBUG} = $opt{DEBUG};
-   }
-
-=pod
-
-=back
-
-=cut
+   $self->{CONVERT} = $opt{CONVERT} if defined($opt{CONVERT});
+   $self->{OUTPUT}  = $opt{OUTPUT}  if defined($opt{OUTPUT});
+   $self->{DEBUG}   = $opt{DEBUG}   if defined($opt{DEBUG});
 }
-
-=pod
-
-=head1 HISTORY
-
-=over 8
-
-=item 0.1
-
-Original version; provides methods: new, parse_dir, create_tmx, clean_tmx
-
-=back
 
 =head1 SEE ALSO
 

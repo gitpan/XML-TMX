@@ -1,11 +1,13 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         XML-TMX
-version:      0.07
+version:      0.10
 version_from: TMX.pm
 installdirs:  site
 requires:
     Exporter:                      0
+    Test::Pod:                     1
+    Test::Pod::Coverage:           0.08
     XML::DT:                       0.27
 
 distribution_type: module
