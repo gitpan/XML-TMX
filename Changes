@@ -1,0 +1,4 @@
+Revision history for Perl extension XML::TMX.
+
+0.1   Sep 14, 2003
+	- Created XML::TMX::{Reader|Query}
