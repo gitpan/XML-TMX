@@ -11,7 +11,7 @@ my $reader;
 $reader = XML::TMX::Reader->new('foobar.tmx');
 ok(!$reader);
 
-my $reader = XML::TMX::Reader->new('t/sample.tmx');
+$reader = XML::TMX::Reader->new('t/sample.tmx');
 ok($reader);
 
 my $count = 0;

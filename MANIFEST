@@ -17,3 +17,4 @@ t/query.t
 t/reader.t
 t/main.t
 t/sample.tmx
+META.yml                                 Module meta-data (added by MakeMaker)

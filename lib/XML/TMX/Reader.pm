@@ -42,13 +42,39 @@ sub for_tu {
   my %handler = ( -type => { tu => 'SEQ' },
 		  tu  => sub {
 		    my %tu = map { ( $_->[0] => $_->[1] ) } @$c;
-		    &{$code}(\%tu);
+		    &{$code}(\%tu,\%v);
 		  },
 		  tuv => sub { [$v{lang}, $c] },
 		  seg => sub { $c },
+		  body => sub { $c },
+		  tmx => sub { $c },
 		);
 
   dt($self->{filename}, %handler);
+}
+
+sub to_html {
+  my $self = shift;
+  my %opt = @_;
+  $self->for_tu(sub {
+		  my ($langs, $opts) = @_;
+		  my $ret = "<table>";
+		  for (keys %$langs) {
+		    $ret .= "<tr><td style=\"vertical-align: top\">";
+		    if ($opt{icons}) {
+		      $ret .= "<img src=\"/icons/flags/".lc($_).".png\" alt=\"$_\"/>"
+		    } else {
+		      $ret .= "$_"
+		    }
+		    $ret .= "</td><td>$langs->{$_}</td></tr>\n"
+		  }
+		  $ret .= "<tr><td></td><td><div style=\"font-size: small; color: #999;\">";
+		  for (keys %$opts) {
+		    $ret .= "$_: $opts->{$_} &nbsp;&nbsp; "
+		  }
+		  $ret .= "</div></td></tr></table>";
+		  $ret;
+		});
 }
 
 =head1 NAME
