@@ -1,5 +1,9 @@
 Revision history for Perl extension XML::TMX.
 
+0.05   Jan 07, 2004
+	- removed dependency with XML::Writer;
+	- option to remove sub-tags when processing <tu>s;
+
 0.04   Nov 11, 2003
 	- use xml:lang instead of lang if the first exists
 

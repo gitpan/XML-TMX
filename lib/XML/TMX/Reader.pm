@@ -38,6 +38,7 @@ sub languages {
 sub for_tu {
   my $self = shift;
   my $code = shift;
+  my %options = @_;
 
   my %handler = ( -type => { tu => 'SEQ' },
 		  tu  => sub {
@@ -48,6 +49,8 @@ sub for_tu {
 		  seg => sub { $c },
 		  body => sub { $c },
 		  tmx => sub { $c },
+		  hi => sub { (exists($options{tags}) && $options{tags} == 0)?$c:toxml },
+		  ph => sub { (exists($options{tags}) && $options{tags} == 0)?$c:toxml },
 		);
 
   dt($self->{filename}, %handler);

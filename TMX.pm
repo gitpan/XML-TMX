@@ -7,7 +7,7 @@ use strict;
 use Exporter ();
 use vars qw($VERSION @ISA @EXPORT_OK);
 
-$VERSION = '0.04';
+$VERSION = '0.05';
 @ISA = 'Exporter';
 @EXPORT_OK = qw();
 
@@ -21,6 +21,8 @@ XML::TMX - Perl extensions for managing TMX files
 
 =head1 DESCRIPTION
 
+XML::TMX is the top level module. At the moment it does not contain
+any useful code, so check sub-modules, please.
 
 
 =head1 SEE ALSO

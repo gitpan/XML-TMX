@@ -8,7 +8,5 @@ WriteMakefile(
 	      'PREREQ_PM'	   => {
 				       'XML::DT'     => 0.24,
 				       'Exporter'    => 0,
-				       'XML::Writer' => 0,
-				       'IO::File'    => 0,
 				      },
 	     );

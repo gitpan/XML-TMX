@@ -4,14 +4,12 @@ package XML::TMX::Writer;
 use 5.004;
 use warnings;
 use strict;
-use XML::Writer;
-require IO::File;
 use Exporter ();
 use vars qw($VERSION @ISA @EXPORT_OK);
 
-$VERSION = '0.1';
+$VERSION = '0.2';
 @ISA = 'Exporter';
-@EXPORT_OK = qw(&new &start_tmx &end_tmx);
+@EXPORT_OK = qw(&new);
 
 =pod
 =head1 NAME
@@ -81,12 +79,16 @@ Output of the TMX, if none is defined stdout is used by default.
 
 =cut
    if(exists($options{OUTPUT})) {
-      $self->{OUTPUT} = new IO::File(">$options{OUTPUT}");
-      $self->{XML} = new XML::Writer(NEWLINES => 1, OUTPUT => $self->{OUTPUT});
+     open $self->{OUTPUT}, ">$options{OUTPUT}" or die "Cannot open file '$options{OUTPUT}': $!\n";
+     # $self->{OUTPUT} = new IO::File(">$options{OUTPUT}");
+     #$self->{XML} = new XML::Writer(NEWLINES => 1, OUTPUT => $self->{OUTPUT});
    } else {
-      $self->{XML} = new XML::Writer(NEWLINES => 1);
+     $self->{OUTPUT} = \*STDOUT;
+     #$self->{XML} = new XML::Writer(NEWLINES => 1);
    }
-   $self->{XML}->xmlDecl("UTF-8");
+   #$self->{XML}->xmlDecl("UTF-8");
+   my $encoding = $options{ENCODING} || "UTF-8";
+   $self->Write("<?xml version=\"1.0\" encoding=\"$encoding\$?>");
 
 =pod
 
@@ -297,9 +299,9 @@ Specifies the identifier of the user who created the element. Defaults to none.
 =cut
    if(defined($options{ID})) { $o{'creationid'} = $options{ID}; }
 
-   $self->{XML}->startTag('tmx', 'version' => 1.4);
-   $self->{XML}->emptyTag('header', %o);
-   $self->{XML}->startTag('body', 'version' => 1.4);
+   $self->startTag('tmx', 'version' => 1.4);
+   $self->startTag('header', %o);
+   $self->startTag('body', 'version' => 1.4);
 }
 
 =pod
@@ -381,15 +383,15 @@ Same meaning as told in B<start_tmx> method.
       delete($tuv{SRCLANG});
    }
    
-   $self->{XML}->startTag('tu', %opt);
+   $self->startTag('tu', %opt);
    for my $lang (keys %tuv) {
-      $self->{XML}->startTag('tuv', 'xml:lang' => $lang);
-      $self->{XML}->startTag('seg');
-      $self->{XML}->characters($tuv{$lang});
-      $self->{XML}->endTag('seg');
-      $self->{XML}->endTag('tuv');
+      $self->startTag('tuv', 'xml:lang' => $lang);
+      $self->startTag('seg');
+      $self->characters($tuv{$lang});
+      $self->endTag('seg');
+      $self->endTag('tuv');
    }
-   $self->{XML}->endTag('tu');
+   $self->endTag('tu');
 }
 
 =pod
@@ -405,10 +407,11 @@ Ends the TMX file, closing file handles if necessary.
 =cut
 sub end_tmx {
    my $self = shift();
-   $self->{XML}->endTag('body');
-   $self->{XML}->endTag('tmx');
-   $self->{XML}->end();
-   $self->{OUTPUT}->close() if(defined($self->{OUTPUT}));
+   $self->endTag('body');
+   $self->endTag('tmx');
+   #$self->{XML}->end();
+   #$self->{OUTPUT}->close() if(defined($self->{OUTPUT}));
+   close($self->{OUTPUT});
 }
 
 =pod
@@ -425,19 +428,52 @@ Original version; provides methods: new, start_tmx and end_tmx
 
 =head1 SEE ALSO
 
-L<XML::Writer(3)>, TMX Specification L<http://www.lisa.org/tmx/tmx.htm>
+TMX Specification L<http://www.lisa.org/tmx/tmx.htm>
 
 =head1 AUTHOR
 
 Paulo Jorge Jesus Silva, E<lt>paulojjs@bragatel.ptE<gt>
+Alberto Simões, E<lt>albie@alfarrabio.di.uminho.ptE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2003 by Paulo Jorge Jesus Silva
+Copyright 2003 by Projecto Natura
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =cut
 
+sub Write {
+  my $self = shift;
+  print {$self->{OUTPUT}} @_, "\n";
+}
+
+sub startTag {
+  my $self = shift;
+  my $tagName = shift;
+  my %attributes = @_;
+  my $attributes = "";
+  $attributes = " ".join(" ",map {"$_=\"$attributes{$_}\""} keys %attributes) if %attributes;
+  $self->Write("<$tagName$attributes>");
+}
+
+sub characters {
+  my $self = shift;
+  my $text = shift;
+  $text =~ s/\&/\&amp;/g;
+  $text =~ s/</\&lt;/g;
+  $text =~ s/>/\&gt;/g;
+  $text =~ s/\n$//g;
+  $self->Write($text);
+}
+
+sub endTag {
+  my $self = shift;
+  my $tagName = shift;
+  $self->Write("</$tagName>");
+}
+
 1;
+
+
