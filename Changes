@@ -1,7 +1,10 @@
 Revision history for Perl extension XML::TMX.
 
-0.2   Oct 09, 2003
+0.03   Oct 12, 2003
+	- Many bugs were found. Here is a working version (we hope)
+
+0.02   Oct 09, 2003
 	- Corrected warnings with perl 5.8.1
 
-0.1   Sep 14, 2003
+0.01   Sep 14, 2003
 	- Created XML::TMX::{Reader|Query}
