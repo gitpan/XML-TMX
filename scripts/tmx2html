@@ -1,0 +1,18 @@
+#!/usr/bin/perl -w -s
+
+use strict;
+use warnings;
+
+use XML::TMX;
+use XML::TMX::Reader;
+
+our ($icons);
+
+my $tmx = shift;
+my $tmx_obj = XML::TMX::Reader->new($tmx);
+
+if ($icons) {
+  print $tmx_obj->to_html(icons => 1);
+} else {
+  print $tmx_obj->to_html;
+}

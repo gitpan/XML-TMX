@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE tmx SYSTEM "tmx11.dtd">
 <tmx version="version 1.1">
-<header o-tmf="TW4Win 2.0 Format" creationtool="MyTool" adminxml:lang="EN-US" creationdate="20020312T164816Z" creationtoolversion="5.0" srcxml:lang="EN-GB" segtype="sentence" datatype="html">
+<header o-tmf="TW4Win 2.0 Format" creationtool="MyTool" adminlang="EN-US" creationdate="20020312T164816Z" creationtoolversion="5.0" srclang="EN-GB" segtype="sentence" datatype="html">
 </header>
 <body>
 

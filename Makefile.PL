@@ -5,8 +5,12 @@ WriteMakefile(
 	      'VERSION_FROM'   => 'TMX.pm',
 	      'AUTHOR'         => 'Projecto Natura',
 	      'ABSTRACT'       => 'TMX tools',
-	      'PREREQ_PM'	   => {
-				       'XML::DT'     => 0.24,
-				       'Exporter'    => 0,
-				      },
+	      'EXE_FILES'      => [qw!scripts/po2tmx
+				      scripts/tmxsplit
+				      scripts/tmx2html
+				      scripts/tmx2tmx!],
+	      'PREREQ_PM'      => {
+				   'XML::DT'     => 0.27,
+				   'Exporter'    => 0,
+				  },
 	     );

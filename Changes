@@ -1,5 +1,11 @@
 Revision history for Perl extension XML::TMX.
 
+0.06   Apr 22, 2004
+        - corrected bug on test files
+	- tmx2tmx is installed
+	- tmx2tmx conversion to TRADOS TMX1.1 format
+	- tmx2tmx basic TMX cleaner
+
 0.05   Jan 07, 2004
 	- removed dependency with XML::Writer;
 	- option to remove sub-tags when processing <tu>s;

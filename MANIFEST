@@ -9,7 +9,10 @@ lib/XML/TMX/FromPO.pm
 lib/XML/TMX/Reader.pm
 lib/XML/TMX/Query.pm
 
-po2xml.pl
+scripts/po2tmx
+scripts/tmx2tmx
+scripts/tmx2html
+scripts/tmxsplit
 
 t/writer.t
 t/frompo.t
