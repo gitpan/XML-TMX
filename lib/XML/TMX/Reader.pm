@@ -8,7 +8,7 @@ use vars qw($VERSION @ISA @EXPORT_OK);
 
 use XML::DT;
 
-$VERSION = '0.1';
+$VERSION = '0.2';
 @ISA = 'Exporter';
 @EXPORT_OK = qw();
 
@@ -23,9 +23,16 @@ sub new {
 
   my $self = {
 	      filename => $file,
+	      ignore_markup => 1,
 	     };
 
   return bless $self, $class;
+}
+
+sub ignore_markup {
+  my $self = shift;
+  my $opt = shift || 1;
+  $self->{ignore_markup} = $opt;
 }
 
 sub languages {
@@ -38,7 +45,6 @@ sub languages {
 sub for_tu {
   my $self = shift;
   my $code = shift;
-  my %options = @_;
 
   my %handler = ( -type => { tu => 'SEQ' },
 		  tu  => sub {
@@ -49,8 +55,8 @@ sub for_tu {
 		  seg => sub { $c },
 		  body => sub { $c },
 		  tmx => sub { $c },
-		  hi => sub { (exists($options{tags}) && $options{tags} == 0)?$c:toxml },
-		  ph => sub { (exists($options{tags}) && $options{tags} == 0)?$c:toxml },
+		  hi => sub { $self->{ignore_markup}?$c:toxml },
+		  ph => sub { $self->{ignore_markup}?$c:toxml },
 		);
 
   dt($self->{filename}, %handler);

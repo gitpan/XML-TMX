@@ -1,5 +1,9 @@
 Revision history for Perl extension XML::TMX.
 
+0.07   May 18, 2004
+        - option to remove sub-tags is now global and not specific for
+          the for_tu command;
+
 0.06   Apr 22, 2004
         - corrected bug on test files
 	- tmx2tmx is installed
