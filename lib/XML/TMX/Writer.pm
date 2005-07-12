@@ -246,7 +246,7 @@ sub start_tmx {
    }
    #$self->{XML}->xmlDecl("UTF-8");
    my $encoding = $options{ENCODING} || "UTF-8";
-   $self->_Write("<?xml version=\"1.0\" encoding=\"$encoding\$?>");
+   $self->_Write("<?xml version=\"1.0\" encoding=\"$encoding\"?>");
 
 
    $o{'creationtool'} = $options{TOOL} || 'XML::TMX::Writer';
@@ -275,6 +275,7 @@ sub start_tmx {
 
    $self->_startTag('tmx', 'version' => 1.4);
    $self->_startTag('header', %o);
+   $self->_endTag('header');
    $self->_startTag('body', 'version' => 1.4);
 }
 
