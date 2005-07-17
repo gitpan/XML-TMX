@@ -1,5 +1,9 @@
 Revision history for Perl extension XML::TMX.
 
+0.12   Jul 17, 2005
+	- added some tests to XML::TMX::Writer;
+	- changed test names to be tested in order;
+
 0.11   Jul 12, 2005
 	- corrected stupid bug lying around since 0.05
 

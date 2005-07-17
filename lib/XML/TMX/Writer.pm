@@ -1,5 +1,4 @@
 package XML::TMX::Writer;
-# vim:sw=3:ts=3:et:
 
 use 5.004;
 use warnings;
@@ -7,7 +6,7 @@ use strict;
 use Exporter ();
 use vars qw($VERSION @ISA @EXPORT_OK);
 
-$VERSION = '0.2';
+$VERSION = '0.21';
 @ISA = 'Exporter';
 @EXPORT_OK = qw(&new);
 
