@@ -1,5 +1,9 @@
 Revision history for Perl extension XML::TMX.
 
+0.13   Jul 20, 2005
+	- for_tu now handles direct output for another TMX file.
+	- removed some newlined in the output.
+
 0.12   Jul 17, 2005
 	- added some tests to XML::TMX::Writer;
 	- changed test names to be tested in order;

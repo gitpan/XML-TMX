@@ -1,13 +1,13 @@
 Makefile.PL
 MANIFEST
 README
-TMX.pm
 Changes
 
 lib/XML/TMX/Writer.pm
 lib/XML/TMX/FromPO.pm
 lib/XML/TMX/Reader.pm
 lib/XML/TMX/Query.pm
+lib/XML/TMX.pm
 
 scripts/po2tmx
 scripts/tmx2tmx

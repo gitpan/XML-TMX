@@ -2,7 +2,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
 	      'NAME'           => 'XML::TMX',
-	      'VERSION_FROM'   => 'TMX.pm',
+	      'VERSION_FROM'   => 'lib/XML/TMX.pm',
 	      'AUTHOR'         => 'Projecto Natura',
 	      'ABSTRACT'       => 'TMX tools',
 	      'EXE_FILES'      => [qw!scripts/po2tmx

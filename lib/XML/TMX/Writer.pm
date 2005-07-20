@@ -6,7 +6,7 @@ use strict;
 use Exporter ();
 use vars qw($VERSION @ISA @EXPORT_OK);
 
-$VERSION = '0.21';
+$VERSION = '0.22';
 @ISA = 'Exporter';
 @EXPORT_OK = qw(&new);
 
@@ -237,15 +237,11 @@ sub start_tmx {
 
    if(exists($options{OUTPUT})) {
      open $self->{OUTPUT}, ">$options{OUTPUT}" or die "Cannot open file '$options{OUTPUT}': $!\n";
-     # $self->{OUTPUT} = new IO::File(">$options{OUTPUT}");
-     #$self->{XML} = new XML::Writer(NEWLINES => 1, OUTPUT => $self->{OUTPUT});
    } else {
      $self->{OUTPUT} = \*STDOUT;
-     #$self->{XML} = new XML::Writer(NEWLINES => 1);
    }
-   #$self->{XML}->xmlDecl("UTF-8");
    my $encoding = $options{ENCODING} || "UTF-8";
-   $self->_Write("<?xml version=\"1.0\" encoding=\"$encoding\"?>");
+   $self->_Write("<?xml version=\"1.0\" encoding=\"$encoding\"?>\n");
 
 
    $o{'creationtool'} = $options{TOOL} || 'XML::TMX::Writer';
@@ -273,9 +269,13 @@ sub start_tmx {
    if(defined($options{ID})) { $o{'creationid'} = $options{ID}; }
 
    $self->_startTag('tmx', 'version' => 1.4);
+   $self->_Write("\n ");
    $self->_startTag('header', %o);
+   $self->_Write("\n ");
    $self->_endTag('header');
+   $self->_Write("\n ");
    $self->_startTag('body', 'version' => 1.4);
+   $self->_Write("\n");
 }
 
 =head2 add_tu
@@ -343,15 +343,21 @@ sub add_tu {
       delete($tuv{SRCLANG});
    }
 
+   $self->_Write("\n  ");
    $self->_startTag('tu', %opt);
+   $self->_Write("\n");
    for my $lang (keys %tuv) {
+      $self->_Write("   ");
       $self->_startTag('tuv', 'xml:lang' => $lang);
       $self->_startTag('seg');
       $self->_characters($tuv{$lang});
       $self->_endTag('seg');
       $self->_endTag('tuv');
+      $self->_Write("\n");
    }
+   $self->_Write("  ");
    $self->_endTag('tu');
+   $self->_Write("\n");
 }
 
 
@@ -365,8 +371,11 @@ Ends the TMX file, closing file handles if necessary.
 
 sub end_tmx {
    my $self = shift();
+   $self->_Write(" ");
    $self->_endTag('body');
+   $self->_Write("\n");
    $self->_endTag('tmx');
+   $self->_Write("\n");
    #$self->{XML}->end();
    #$self->{OUTPUT}->close() if(defined($self->{OUTPUT}));
    close($self->{OUTPUT});
@@ -393,31 +402,32 @@ it under the same terms as Perl itself.
 
 sub _Write {
   my $self = shift;
-  print {$self->{OUTPUT}} @_, "\n";
+  print {$self->{OUTPUT}} @_;
 }
 
 sub _startTag {
-  my $self = shift;
-  my $tagName = shift;
-  my %attributes = @_;
+  my ($self, $tagName, %attributes) = @_;
+
   my $attributes = "";
   $attributes = " ".join(" ",map {"$_=\"$attributes{$_}\""} keys %attributes) if %attributes;
   $self->_Write("<$tagName$attributes>");
 }
 
 sub _characters {
-  my $self = shift;
-  my $text = shift;
+  my ($self, $text) = @_;
+
+  $text =~ s/\n/ /g;
+  $text =~ s/  +/ /g;
   $text =~ s/\&/\&amp;/g;
   $text =~ s/</\&lt;/g;
   $text =~ s/>/\&gt;/g;
-  $text =~ s/\n$//g;
+
   $self->_Write($text);
 }
 
 sub _endTag {
-  my $self = shift;
-  my $tagName = shift;
+  my ($self, $tagName) = @_;
+
   $self->_Write("</$tagName>");
 }
 

@@ -7,8 +7,9 @@ use Exporter ();
 use vars qw($VERSION @ISA @EXPORT_OK);
 
 use XML::DT;
+use XML::TMX::Writer;
 
-$VERSION = '0.2';
+$VERSION = '0.21';
 @ISA = 'Exporter';
 @EXPORT_OK = qw();
 
@@ -37,7 +38,7 @@ This module provides a simple way for reading TMX files.
 
 The following methods are available:
 
-=head2 new
+=head2 C<new>
 
 This method creates a new XML::TMX::Reader object. This process checks
 for the existence of the file and extracts some meta-information from
@@ -64,7 +65,7 @@ sub new {
   return bless $self, $class;
 }
 
-=head2 ignore_markup
+=head2 C<ignore_markup>
 
 This method is used to set the flag to ignore (or not) markup inside
 translation unit segmnets. The default is to ignore those markup.
@@ -82,7 +83,7 @@ sub ignore_markup {
   $self->{ignore_markup} = $opt;
 }
 
-=head2 languages
+=head2 C<languages>
 
 This method returns the languages being used on the specified
 translation memory. Note that the module does not check for language
@@ -97,11 +98,25 @@ sub languages {
   return keys %languages;
 }
 
-=head2 for_tu
+=head2 C<for_tu>
 
 Use C<for_tu> to process all translation units from a TMX file. The
-first (and unique) argument to this method is a code reference. This
-code will be called for each translation unit found.
+first optional argument is a configuration hash. The mandatory
+argument to this method is a code reference. This code will be called
+for each translation unit found.
+
+The configuration hash is a reference to a Perl hash. At the moment
+these are valid options:
+
+=over
+
+=item C<output>
+
+Filename to output the changed TMX to. Note that if you use this
+option, your function should return a hash reference where keys are
+language names, and values their respective translation.
+
+=back
 
 The function will receive two arguments:
 
@@ -119,16 +134,47 @@ translation unit tag;
 
 =back
 
+If you want to process the TMX and return it again, your function
+should return an hash reference where keys are the languages, and
+values their respective translation.
+
 =cut
 
 sub for_tu {
   my $self = shift;
   my $code = shift;
+  my $conf;
+
+  if (ref($code) eq "HASH") {
+    $conf = $code;
+    $code = shift;
+  }
+
+  my $outputingTMX = 0;
+  my $tmx;
+
+  # If we have an output filename, user wants to output a TMX
+  if (defined($conf->{output})) {
+    $outputingTMX = 1;
+    $tmx = new XML::TMX::Writer();
+    $tmx->start_tmx(OUTPUT => $conf->{output});
+  }
 
   my %handler = ( -type => { tu => 'SEQ' },
 		  tu  => sub {
 		    my %tu = map { ( $_->[0] => $_->[1] ) } @$c;
-		    &{$code}(\%tu,\%v);
+		    my $ans = $code->(\%tu,\%v);
+
+		    # Check if the user wants to create a TMX and
+		    # forgot to say us
+		    if (ref($ans) eq "HASH" && !$outputingTMX) {
+		      $outputingTMX = 1;
+		      $tmx = new XML::TMX::Writer();
+		      $tmx->start_tmx;
+		    }
+
+		    # Add the translation unit
+		    $tmx->add_tu(%$ans) if ref($ans) eq "HASH";
 		  },
 		  tuv => sub { [$v{lang} || $v{'xml:lang'}, $c] },
 		  seg => sub { $c },
@@ -139,9 +185,11 @@ sub for_tu {
 		);
 
   dt($self->{filename}, %handler);
+
+  $tmx->end_tmx if $outputingTMX;
 }
 
-=head2 to_html
+=head2 C<to_html>
 
 Use this method to create a nice HTML file with the translation
 memories. Notice that this method is not finished yet, and relies on
@@ -186,7 +234,7 @@ Paulo Jorge Jesus Silva, E<lt>paulojjs@bragatel.ptE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2003 by Projecto Natura
+Copyright 2003-2005 by Projecto Natura
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
