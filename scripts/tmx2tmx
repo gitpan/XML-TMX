@@ -21,7 +21,9 @@ tmx2tmx - utility to convert and filter TMX files
 
   tmx2tmx -clean file1.tmx > file2.tmx
 
-  tmx2tmx -join file1.tmx ... filen.tmx > file.tmx
+=cut
+
+#  tmx2tmx -join file1.tmx ... filen.tmx > file.tmx
 
 =head1 DESCRIPTION
 
@@ -117,11 +119,12 @@ if ($clean) {
 }
 
 
-=head2 Joining TMX
 
-   tmx2tmx -join file1.tmx ... filen.tmx > file.tmx
-
-=cut
+#=head2 Joining TMX
+#
+#   tmx2tmx -join file1.tmx ... filen.tmx > file.tmx
+#
+#=cut
 
 # para juntar temos de saber que linguas cada tmx tem:
 #

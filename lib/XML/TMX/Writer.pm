@@ -6,7 +6,7 @@ use strict;
 use Exporter ();
 use vars qw($VERSION @ISA @EXPORT_OK);
 
-$VERSION = '0.22';
+$VERSION = '0.23';
 @ISA = 'Exporter';
 @EXPORT_OK = qw(&new);
 
@@ -235,12 +235,15 @@ sub start_tmx {
    $o{'creationdate'} = sprintf("%d%02d%02dT%02d%02d%02dZ", $time[5]+1900,
                       $time[4]+1, $time[3], $time[2], $time[1], $time[0]);
 
+   my $encoding = $options{ENCODING} || "UTF-8";
+
    if(exists($options{OUTPUT})) {
      open $self->{OUTPUT}, ">$options{OUTPUT}" or die "Cannot open file '$options{OUTPUT}': $!\n";
+     binmode $self->{OUTPUT}, ":utf8"      if ($encoding =~ m!utf.?8!i);
    } else {
      $self->{OUTPUT} = \*STDOUT;
    }
-   my $encoding = $options{ENCODING} || "UTF-8";
+
    $self->_Write("<?xml version=\"1.0\" encoding=\"$encoding\"?>\n");
 
 
@@ -260,7 +263,7 @@ sub start_tmx {
 
    $o{'adminlang'} = $options{ADMINLANG} || 'en';
 
-   $o{'srclang'} = $options{SRCLANG} || '*all*';
+   $o{'srclang'} = $options{SRCLANG} || 'en';  # was '*all*'
 
    $o{'datatype'} = $options{DATATYPE} || 'plaintext';
 
@@ -274,7 +277,7 @@ sub start_tmx {
    $self->_Write("\n ");
    $self->_endTag('header');
    $self->_Write("\n ");
-   $self->_startTag('body', 'version' => 1.4);
+   $self->_startTag('body'); #, 'version' => 1.4);
    $self->_Write("\n");
 }
 

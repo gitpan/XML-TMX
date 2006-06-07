@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tmx version="1.4">
- <header o-tmf="plain text" adminlang="en" creationid="foobar" creationdate="20050720T111919Z" creationtoolversion="0.21" creationtool="XML::TMX::Writer" srclang="*all*" segtype="sentence" datatype="plaintext">
+ <header o-tmf="plain text" adminlang="en" creationid="foobar" creationdate="20050720T111919Z" creationtoolversion="0.22" creationtool="XML::TMX::Writer" srclang="en" segtype="sentence" datatype="plaintext">
  </header>
- <body version="1.4">
+ <body>
 
   <tu srclang="en">
    <tuv xml:lang="pt"><seg>algum texto</seg></tuv>

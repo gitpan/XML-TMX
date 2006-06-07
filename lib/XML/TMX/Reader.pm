@@ -29,6 +29,8 @@ XML::TMX::Reader - Perl extension for reading TMX files
    });
 
    @used_languages = $reader->languages;
+   
+   $reader->to_html()
 
 =head1 DESCRIPTION
 
@@ -68,7 +70,7 @@ sub new {
 =head2 C<ignore_markup>
 
 This method is used to set the flag to ignore (or not) markup inside
-translation unit segmnets. The default is to ignore those markup.
+translation unit segments. The default is to ignore those markup.
 
 If called without parameters, it sets the flag to ignore the
 markup. If you don't want to do that, use
