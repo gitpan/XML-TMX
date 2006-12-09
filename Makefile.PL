@@ -7,6 +7,7 @@ WriteMakefile(
 	      'ABSTRACT'       => 'TMX tools',
 	      'EXE_FILES'      => [qw!scripts/po2tmx
 				      scripts/tmxsplit
+				      scripts/tmxuniq
 				      scripts/tmx2html
 				      scripts/tmx2tmx!],
 	      'PREREQ_PM'      => {

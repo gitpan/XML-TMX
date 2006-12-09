@@ -1,0 +1,88 @@
+#!/usr/bin/perl -s
+use DB_File;
+use Fcntl ;
+use XML::TMX::Reader;
+use Digest::MD5 qw(md5_hex);
+
+our ($cont,$l,$id,$dig);
+
+my ($l1,$l2);
+
+if($l =~ /(.+):(.+)/){ ($l1,$l2)=($1,$2) }
+die ("usage: $0 [-cont] -l=en:pt tmx ...\n") unless @ARGV ;
+
+if($cont) {
+  tie %dic, 'DB_File', "__tmxuniq.db", O_RDWR|O_CREAT , 0640, $DB_BTREE;
+}
+else {
+  tie %dic, 'DB_File', "__tmxuniq.db", O_RDWR|O_CREAT|O_TRUNC , 0640, $DB_BTREE;
+}
+
+my $cid = 0;
+
+for my $file (@ARGV){
+ my $tm = XML::TMX::Reader->new($file);
+ if(not defined $l1){ ($l1,$l2)= sort ($tm->languages);  print "$l1/$l2\n"}
+
+ $tm->for_tu2(                   ## remove if equal digest
+     { output => "$file._" },
+     sub { 
+        my $tu=shift;
+        $cid ++;
+        $tu->{-prop}{id}= $cid if $id;
+        my $digest = md5_hex(n("$tu->{$l1},$tu->{$l2}"));
+        
+        if ($dic{$digest}) { 
+               $dic{$digest} .= "$cid;"; 
+               $rem ++;
+               return undef   }
+        else { $dic{$digest} = "$cid;";
+               $tu->{-prop}{digest}=$digest if $dig; 
+               return {%$tu} ; }
+     
+     }
+ );
+
+ undef $tm;
+ print "total = $cid; Removidas = $rem\n";
+}
+untie %h;
+
+
+sub n{
+ my $a = shift;
+ $a =~ s/\s+/ /g;
+ $a =~ s/ $//;
+ $a =~ s/^ //;
+ $a;
+}
+
+__END__
+
+=head1 NAME
+
+tmxuniq - removes duplicated translation units from TMXs
+
+=head1 SYNOPSIS
+
+ tmxuniq options -l=en:pt tmx1 ... 
+
+=head1 DESCRIPTION
+
+Removes duplicated translation units from a set of TMX (Translation
+Memory eXange format).
+
+=head1 OPTIONS
+
+ -id  -- insert a uniq id property in each TU
+ -dig -- insert a digest property in each TU
+
+=head1 AUTHOR
+
+J.Joao Almeida, jj@di.uminho.pt
+
+=head1 SEE ALSO
+
+perl(1).
+
+=cut      

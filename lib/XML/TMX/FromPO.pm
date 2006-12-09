@@ -39,6 +39,7 @@ Creates a new XML::TMX::FromPO object. Please check the L<COMMON
 CONFIGURATION> section for details on the options.
 
 =cut
+
 sub new {
    my $proto = shift;
    my $class = ref($proto) || $proto;

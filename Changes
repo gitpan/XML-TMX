@@ -1,5 +1,10 @@
 Revision history for Perl extension XML::TMX.
 
+0.15   Dec  9, 2006
+        - new for_tu2 function that will soon replace for_tu
+          more efficient for big files
+        - languages function just checks the first few 100 TUs
+
 0.14   Jun  7, 2006
         - in XML::TMX::Writer, if we know the encoding, use binmode
 	  to force it.

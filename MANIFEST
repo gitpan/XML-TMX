@@ -13,6 +13,7 @@ scripts/po2tmx
 scripts/tmx2tmx
 scripts/tmx2html
 scripts/tmxsplit
+scripts/tmxuniq
 
 t/01_main.t
 t/10_writer.t

@@ -23,6 +23,13 @@ XML::TMX::Writer - Perl extension for writing TMX files
    $tmx->start_tmx(ID => 'paulojjs');
 
    $tmx->add_tu(SRCLANG => 'en', 'en' => 'some text', 'pt' => 'algum texto');
+   $tmx->add_tu(SRCLANG => 'en', 
+                'en' => 'some text', 
+                'pt' => 'algum texto',
+                 -note => [32, 34 ],
+                 -prop => { q => 23,
+                           aut => "jj"}
+               );
 
    $tmx->end_tmx();
 
@@ -284,6 +291,15 @@ sub start_tmx {
 =head2 add_tu
 
   $tmx->add_tu(SRCLANG => LANG1, LANG1 => 'text1', LANG2 => 'text2');
+  $tmx->add_tu(SRCLANG => LANG1, 
+               LANG1 => 'text1', 
+               LANG2 => 'text2',
+               -note => ["value1",  ## notes
+                        "value2"],
+               -prop => { type1 => "value1",  ## properties
+                         type2 => "value2",
+                         typen => "valuen"}
+              );
 
 Adds a translation unit to the TMX file. Several optional labels can be
 specified:
@@ -319,6 +335,8 @@ Same meaning as told in B<start_tmx> method.
 sub add_tu {
    my $self = shift;
    my %tuv = @_;
+   my %prop = ();
+   my @note = ();
    my %opt;
 
    if(defined($tuv{ID})) {
@@ -346,9 +364,38 @@ sub add_tu {
       delete($tuv{SRCLANG});
    }
 
+   if(defined($tuv{"-prop"})) {
+      %prop = %{$tuv{"-prop"}};
+      delete($tuv{"-prop"});
+   }
+
+   if(defined($tuv{"-note"})) {
+      @note = @{$tuv{"-note"}};
+      delete($tuv{"-note"});
+   }
+
    $self->_Write("\n  ");
    $self->_startTag('tu', %opt);
    $self->_Write("\n");
+
+   ### write the prop s <prop type="x-name">problemas 23</prop>
+   for my $p (keys %prop) {
+      $self->_Write("   ");
+      $self->_startTag('prop', 'type' => $p);
+      $self->_characters($prop{$p});
+      $self->_endTag('prop');
+      $self->_Write("\n");
+   }
+
+   ### write the prop s <prop type="x-name">problemas 23</prop>
+   for my $p (@note) {
+      $self->_Write("   ");
+      $self->_startTag('note');
+      $self->_characters($p);
+      $self->_endTag('note');
+      $self->_Write("\n");
+   }
+
    for my $lang (keys %tuv) {
       $self->_Write("   ");
       $self->_startTag('tuv', 'xml:lang' => $lang);
