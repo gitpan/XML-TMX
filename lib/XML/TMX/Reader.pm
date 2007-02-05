@@ -253,7 +253,6 @@ sub for_tu2 {
 	);
 
 
-
   $/ = "\n";
 
   my $header = "";
@@ -267,10 +266,15 @@ sub for_tu2 {
     $header .= $_;
   }
 
-  if(m!<body.*?>!s) {
-     $header .= "$`$&";
-     $resto = $';
+  if(m!(.*?)(<body.*?>)(.*)!s) {
+     $header .= "$1$2";
+     $resto = $3;
   }
+
+#  if(m!<body.*?>!s) {
+#     $header .= "$`$&";
+#     $resto = $';
+#  }
 
   # If we have an output filename, user wants to output a TMX
   if (defined($conf->{output})) {
