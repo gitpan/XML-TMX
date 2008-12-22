@@ -1,0 +1,45 @@
+#!/usr/bin/perl -s
+use XML::TMX::Reader;
+
+my $TU = 0;
+for my $file (@ARGV) {
+  my $tm = XML::TMX::Reader->new($file);
+
+  $tm->for_tu2(
+               sub { $TU++ ;
+                   report() unless $TU%10000;
+                   }
+              );
+
+}
+
+report();
+
+sub report {
+  print "$TU\n";
+}
+
+__END__
+
+=head1 NAME
+
+tmxwc - gives statistics about tmx files
+
+=head1 SYNOPSIS
+
+ tmxwc  tmx1 ...
+
+=head1 DESCRIPTION
+
+Gives statistical information about TMX files like the number of
+translation units.
+
+=head1 AUTHOR
+
+Alberto Simões, E<lt>ambs@cpan.orgE<gt>
+
+=head1 SEE ALSO
+
+perl(1).
+
+=cut      

@@ -1,23 +1,39 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -w -s
 
+our($s);
+
+use Data::Dumper;
 use strict;
 use lib 'lib';
 use XML::TMX::FromPO;
 
 my $tmx = new XML::TMX::FromPO(DEBUG => 1);
-
 my %convert = ( 'pt_en' => 'pt en',
                 'pt_es' => 'pt es',
                 'pt_br' => 'pt pt_br',
                 'en_fr' => 'en fr');
-#               );
 
-my $lang = '';
-for my $c (keys %convert) {
-   $lang = $lang . " $convert{$c}";
+if($s){
+  my $lang = $s;
+  if ($s eq "1") { die("Usage $0 -s=pt DIR\n")}
+ 
+  while(my $dir = shift()) {
+      $tmx->rec_get_po($dir, $lang, LANG=>"$lang en");
+      open(XML, "| tee _1.aux |xmllint --recover --format - | bzip2 > $lang-en.tmx.bz2");
+#      print STDOUT Dumper($tmx); 
+      *STDOUT = *XML;
+      $tmx->create_tmx(LANG => "$lang en");
+      close(XML);
+  }
 }
+else{
 
-while(my $dir = shift()) {
+  my $lang = '';
+  for my $c (keys %convert) {
+     $lang = $lang . " $convert{$c}";
+  }
+
+  while(my $dir = shift()) {
       $tmx->parse_dir("$dir/po", LANG => $lang);
       $dir =~ m/([a-z0-9_\.-]+)\/*$/i;
       for my $conv (keys %convert) {
@@ -26,4 +42,5 @@ while(my $dir = shift()) {
          $tmx->create_tmx(LANG => "$convert{$conv}");
          close(XML);
       }
+  }
 }

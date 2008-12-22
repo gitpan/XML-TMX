@@ -10,4 +10,12 @@ To install this module type the following:
    make test
    make install
 
+Note that some installed scripts require modules that are not required
+for XML::TMX installation. This gives you the possibility to install
+quickly XML::TMX for your use, but probably installs some commands
+that will not work out-of-the-box.
 
+Some of the required modules:
+ - Lingua::PT::PLNbase
+ - Digest::MD5
+ - DB_File

@@ -295,7 +295,6 @@ sub for_tu2 {
     last if (defined $conf->{proc_tu} && $i > $conf->{proc_tu} );
     last if (defined $conf->{gen_tu} && $gen > $conf->{gen_tu} );
     next if (defined $conf->{patt} && !m/$conf->{patt}/ );
-    print STDERR "." if ($i % 1000==0);
     s/\>\s+/>/;
     undef($data);
     eval {dtstring($_, %h)} ; ## dont die in invalid XML

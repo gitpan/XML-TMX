@@ -14,6 +14,8 @@ scripts/tmx2tmx
 scripts/tmx2html
 scripts/tmxsplit
 scripts/tmxuniq
+scripts/tmxwc
+scripts/tmxclean
 
 t/01_main.t
 t/10_writer.t

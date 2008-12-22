@@ -136,11 +136,15 @@ if ($clean) {
 =head2 Concatenating TMX
 
    tmx2tmx -cat file1.tmx ... filen.tmx > file.tmx
+   ls | grep '.tmx$' | tmx2tmx -cat > file.tmx
 
 =cut
 
 if ($cat) {
-  my @files = @ARGV;
+  my @files ;
+  if(@ARGV){ @files = @ARGV; }
+  else { @files = map { chomp; $_ } <> }
+
   my $file = shift @files;
   open F, $file or die "Cannot open file: $file\n";
   while(<F>) {

@@ -1,8 +1,10 @@
 Revision history for Perl extension XML::TMX.
 
+0.17   Dec 22, 2008
+	- Added tmxwc and tmxclean scripts.
+
 0.16   Fev  5, 2007
-	- for_tu2 function used $&,$` and $' which made other tool
-          code run slowly. Refactored!
+	- refactoed for_tu2 function (it used $&, $` and $').
 
 0.15   Dec  9, 2006
         - new for_tu2 function that will soon replace for_tu

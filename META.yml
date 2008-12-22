@@ -1,17 +1,23 @@
 --- #YAML:1.0
-name:                XML-TMX
-version:             0.16
-abstract:            TMX tools
-license:             ~
-generated_by:        ExtUtils::MakeMaker version 6.31
-distribution_type:   module
-requires:     
-    Exporter:                      0
-    Test::Pod:                     1
-    Test::Pod::Coverage:           0.08
-    XML::DT:                       0.27
-meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.2.html
-    version: 1.2
+name:               XML-TMX
+version:            0.17
+abstract:           TMX tools
 author:
     - Projecto Natura
+license:            unknown
+distribution_type:  module
+configure_requires:
+    ExtUtils::MakeMaker:  0
+requires:
+    Exporter:             0
+    Test::Pod:            1.00
+    Test::Pod::Coverage:  0.08
+    XML::DT:              0.27
+no_index:
+    directory:
+        - t
+        - inc
+generated_by:       ExtUtils::MakeMaker version 6.48
+meta-spec:
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4

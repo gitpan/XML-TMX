@@ -65,6 +65,52 @@ sub new {
 }
 
 
+=head2 rec_get_po
+
+TODO: Document method
+
+=cut
+
+sub rec_get_po {
+   my $self = shift;
+   my $dir = shift;
+   my $lan1 = shift;
+   __common_conf($self, @_);
+
+   # check if directory is readable
+   if(-f $dir) {
+      my $file=$dir;
+      my $lang = lc($lan1);
+
+      if(!defined($self->{LANG}) || __check_lang($self, $lang)) {
+            __processa($self, $file, $lang);
+      }
+   }
+   else {
+    die("$dir is not a readable directory\n") unless(-d $dir);
+    for my $file (<$dir/*>) {
+
+      if($file =~ /(.*)\.(po|messages)$/) {
+         my $lang = lc($lan1);
+
+         if(!defined($self->{LANG}) || __check_lang($self, $lang)) {
+            __processa($self, $file, $lang);
+         }
+      }
+      elsif(-d $file) {
+         rec_get_po($self,$file,$lan1)
+      }
+      else {
+         ## warn ("$file ... não tem lingua\n") if($self->{DEBUG});
+      }
+    }
+   }
+
+   __add_en($self)  if(__check_lang($self, 'en'));
+   __limpa($self);
+}
+
+
 =head2 parse_dir
 
 TODO: Document method
