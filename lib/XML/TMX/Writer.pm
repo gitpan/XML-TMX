@@ -182,6 +182,7 @@ PageMaker
 =item rtf
 
 Rich Text Format
+
 =item sgml
 
 SGML
@@ -466,6 +467,7 @@ sub _startTag {
 sub _characters {
   my ($self, $text) = @_;
 
+  $text = "" unless defined $text;
   $text =~ s/\n/ /g;
   $text =~ s/  +/ /g;
   $text =~ s/\&/\&amp;/g;

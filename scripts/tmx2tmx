@@ -4,6 +4,7 @@
 #use warnings;
 
 use XML::TMX::Reader;
+use XML::DT;
 
 our ($toTrados, $clean, $join, $cat);
 
@@ -148,12 +149,19 @@ if ($cat) {
   my $file = shift @files;
   open F, $file or die "Cannot open file: $file\n";
   while(<F>) {
+      print;
+      last if m!<body!;
+  }
+  print "<!-- FILE: $file -->\n";
+  while(<F>) {
     s!</\s*(body|tmx)\s*>!!;
     print;
   }
   close F;
+
   for $file (@files) {
     open F, $file or die "Cannot open file: $file\n";
+    print "<!-- FILE: $file -->\n";
     while(<F>) {
       last if m!<body!;
     }

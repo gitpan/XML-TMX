@@ -1,23 +1,25 @@
 #!/usr/bin/perl -s
 use XML::TMX::Reader;
 
-my $TU = 0;
+print STDERR "";
+
+my $TTU = 0;
+my $n = scalar(@ARGV);
+
 for my $file (@ARGV) {
-  my $tm = XML::TMX::Reader->new($file);
+    my $tm = XML::TMX::Reader->new($file);
 
-  $tm->for_tu2(
-               sub { $TU++ ;
-                   report() unless $TU%10000;
+    my $TU = 0;
+    $tm->for_tu2(
+                 sub { $TU++ ;
+                       print STDERR "\r$TU..." unless $TU%1000;
                    }
-              );
+                );
+    print STDERR "\r$file: $TU tu.\n";
+    $TTU += $TU;
 
 }
-
-report();
-
-sub report {
-  print "$TU\n";
-}
+print STDERR "total: $TTU tu.\n" if $n > 1;
 
 __END__
 
@@ -27,7 +29,7 @@ tmxwc - gives statistics about tmx files
 
 =head1 SYNOPSIS
 
- tmxwc  tmx1 ...
+ tmxwc  tmx1 [tmx2 ...]
 
 =head1 DESCRIPTION
 
@@ -42,4 +44,4 @@ Alberto Simões, E<lt>ambs@cpan.orgE<gt>
 
 perl(1).
 
-=cut      
+=cut

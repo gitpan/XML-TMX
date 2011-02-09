@@ -95,13 +95,15 @@ code correctness or existence.
 =cut
 
 sub languages {
-  my $self = shift;
-  my %languages = ();
-  $self->for_tu2({proc_tu => 100},
-                 sub{ my $tu = shift;
-                      for( keys %$tu ) {
-                        $languages{$_}++ unless m/^-/;
-                      }} );
+    my $self = shift;
+    my %languages = ();
+    $self->for_tu2({proc_tu => 100},
+                   sub {
+                       my $tu = shift;
+                       for ( keys %$tu ) {
+                           $languages{$_}++ unless m/^-/;
+                       }
+                   } );
   return keys %languages;
 }
 
@@ -148,7 +150,7 @@ values their respective translation.
 =head2 C<for_tu2>
 
 Use C<for_tu2> to process all translation units from a TMX file.
-THis vertions iterates foa all tu (one at the time)
+This version iterates for all tu (one at the time)
 
 It will probably scale up better then C<for_tu>
 
@@ -260,9 +262,13 @@ sub for_tu2 {
 
   open X, $self->{filename} or die "cannot open file $self->{filename}\n";
   while(<X>){
+    if (/^\xFF\xFE/) {
+        die("UTF16 encoding not supported; try 'iconv -f unicode -t utf8 tmx' before\n");
+    }
+    next if /^\s*$/;
     last if /<body\b/;
-    if(/encoding=.ISO-8859-1./i){
-         $h{-outputenc}=$h{-inputenc}="ISO-8859-1";}
+
+    $h{-outputenc} = $h{-inputenc} = "ISO-8859-1" if /encoding=.ISO-8859-1./i;
     $header .= $_;
   }
 
@@ -279,7 +285,7 @@ sub for_tu2 {
   # If we have an output filename, user wants to output a TMX
   if (defined($conf->{output})) {
 
-    #### eventaulmente escrever $header!!!
+    #### eventualmente escrever $header!!!
 
     $outputingTMX = 1;
     $tmx = new XML::TMX::Writer();

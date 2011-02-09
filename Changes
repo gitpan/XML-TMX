@@ -1,5 +1,9 @@
 Revision history for Perl extension XML::TMX.
 
+0.18   Feb 09, 2011
+        - tmxwc working for multiple files;
+        - Fixed tmxuniq to work without complaining on unicode;
+
 0.17   Dec 22, 2008
 	- Added tmxwc and tmxclean scripts.
 
