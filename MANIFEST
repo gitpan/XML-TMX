@@ -14,6 +14,7 @@ scripts/tmx2tmx
 scripts/tmx2html
 scripts/tmxsplit
 scripts/tmxuniq
+scripts/tmxgrep
 scripts/tmxwc
 scripts/tmxclean
 scripts/xpdf-tmx
@@ -31,3 +32,4 @@ t/sample.tmx
 t/writer1.xml
 
 META.yml                                 Module meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)

@@ -10,7 +10,7 @@ use XML::DT;
 use XML::TMX::Writer;
 # use Data::Dumper;
 
-$VERSION = '0.22';
+$VERSION = '0.23';
 @ISA = 'Exporter';
 @EXPORT_OK = qw();
 
@@ -81,8 +81,8 @@ markup. If you don't want to do that, use
 =cut
 
 sub ignore_markup {
-  my $self = shift;
-  my $opt = shift || 1;
+  my ($self, $opt) = @_;
+  $opt = 1 unless defined $opt;
   $self->{ignore_markup} = $opt;
 }
 

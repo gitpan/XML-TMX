@@ -30,38 +30,39 @@ for my $file (@ARGV){
     }
     print STDERR "Processing...";
 
-    $tm->for_tu2(
-                 { output => $o || "$file._" },
-                 sub {
-                     my $tu = shift;
-                     $cid ++;
-                     $tu->{-prop}{id}= $cid if $id;
-                     $tu->{$l1} = n($tu->{$l1});
-                     $tu->{$l2} = n($tu->{$l2});
-                     if($clean and $tu->{$l1} eq $tu->{$l2} || $tu->{$l1} !~ /\w/ ){
-                         $rem ++;
-                         return undef
-                     }
-                     my $digest = md5_hex(encode_utf8("$tu->{$l1},$tu->{$l2}"));
+    $tm->for_tu2
+      (
+       { output => $o || "$file._" },
+       sub {
+           my $tu = shift;
+           $cid ++;
+           $tu->{-prop}{id}= $cid if $id;
+           $tu->{$l1} = n($tu->{$l1});
+           $tu->{$l2} = n($tu->{$l2});
+           if($clean and $tu->{$l1} eq $tu->{$l2} || $tu->{$l1} !~ /\w/ ){
+               $rem ++;
+               return undef
+           }
+           my $digest = md5_hex(encode_utf8("$tu->{$l1},$tu->{$l2}"));
 
-                     unless ($cid % 10000) {
-                         my $size = -s "__tmxuniq_$$.db";
-                         printf STDERR
-                           "\rTotal: %10d  Removed: %8d (%.2f%%)  Database size: %10d bytes",
-                             $cid, $rem, (100*$rem/$cid), $size;
-                     }
+           unless ($cid % 10000) {
+               my $size = -s "__tmxuniq_$$.db";
+               printf STDERR
+                 "\rTotal: %10d  Removed: %8d (%.2f%%)  Database size: %10d bytes",
+                   $cid, $rem, (100*$rem/$cid), $size;
+           }
 
-                     if ($dic{$digest}) {
-                         $dic{$digest} .= "$cid;";
-                         $rem ++;
-                         return undef
-                     } else {
-                         $dic{$digest} = "$cid;";
-                         $tu->{-prop}{digest}=$digest if $dig;
-                         return {%$tu} ;
-                     }
-                 }
-                );
+           if ($dic{$digest}) {
+               $dic{$digest} .= "$cid;";
+               $rem ++;
+               return undef
+           } else {
+               $dic{$digest} = "$cid;";
+               $tu->{-prop}{digest}=$digest if $dig;
+               return {%$tu} ;
+           }
+       }
+      );
 
     my $size = -s "__tmxuniq_$$.db";
     printf STDERR "\rTotal: %10d  Removed: %8d (%.2f%%)  Database size: %10d bytes\n",

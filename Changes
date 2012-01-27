@@ -1,5 +1,8 @@
 Revision history for Perl extension XML::TMX.
 
+0.19   Fev 27, 2012
+        - fix 'ignore_markup' in Reader.pm (thanks to Achim Ruopp)
+
 0.18   Feb 09, 2011
         - tmxwc working for multiple files;
         - Fixed tmxuniq to work without complaining on unicode;

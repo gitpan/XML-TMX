@@ -12,6 +12,7 @@ WriteMakefile(
                                       scripts/tmxclean
                                       scripts/tmxwc
                                       scripts/tmx2html
+                                      scripts/tmxgrep
                                       scripts/xpdf-tmx
                                       scripts/tmx2tmx!],
 	      'PREREQ_PM'      => {
