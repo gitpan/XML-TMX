@@ -1,6 +1,9 @@
 Revision history for Perl extension XML::TMX.
 
-0.19   Fev 27, 2012
+0.20   Jan 31, 2012
+        - add 'verbose' option to for_tu family of methods
+
+0.19   Jan 27, 2012
         - fix 'ignore_markup' in Reader.pm (thanks to Achim Ruopp)
 
 0.18   Feb 09, 2011

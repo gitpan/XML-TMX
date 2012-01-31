@@ -10,7 +10,7 @@ use XML::DT;
 use XML::TMX::Writer;
 # use Data::Dumper;
 
-$VERSION = '0.23';
+$VERSION = '0.24';
 @ISA = 'Exporter';
 @EXPORT_OK = qw();
 
@@ -119,6 +119,11 @@ these are valid options:
 
 =over
 
+=item C<verbose>
+
+Set this option to a true value and a counter of the number of
+processed translation units will be printed to stderr.
+
 =item C<output>
 
 Filename to output the changed TMX to. Note that if you use this
@@ -158,6 +163,11 @@ The configuration hash is a reference to a Perl hash. At the moment
 these are valid options:
 
 =over
+
+=item C<verbose>
+
+Set this option to a true value and a counter of the number of
+processed translation units will be printed to stderr.
 
 =item C<output>
 
@@ -294,31 +304,36 @@ sub for_tu2 {
 
   $/ = "</tu>";
   my $i = 0;
+  print STDERR "." if $conf->{verbose};
   while(<X>) {
-    ($_ = $resto . $_ and $resto = "" ) if $resto;
-    last if /<\/body>/;
-    $i++;
-    last if (defined $conf->{proc_tu} && $i > $conf->{proc_tu} );
-    last if (defined $conf->{gen_tu} && $gen > $conf->{gen_tu} );
-    next if (defined $conf->{patt} && !m/$conf->{patt}/ );
-    s/\>\s+/>/;
-    undef($data);
-    eval {dtstring($_, %h)} ; ## dont die in invalid XML
-    #### dt($self->{filename}, %h);
-    if($@){warn($@)}
-    else{
-   #   for my $k (keys %$data) {
-   #     if (exists($files{"$filename-$k"})) {
-   #        myprint($files{"$filename-$k"}, $data->{$k},$i);
-   #     } else {
-   #       my $x;
-   #       open $x, ">$filename-$k" or die("cant >$filename-$k\n");
-   #       myprint($x, $data->{$k},$i);
-   #       $files{"$filename-$k"} = $x;
-   #     }
-   #   }
-    }
+      ($_ = $resto . $_ and $resto = "" ) if $resto;
+      last if /<\/body>/;
+      $i++;
+      print STDERR "\r$i" if $conf->{verbose} && !($i % 10);
+      last if (defined $conf->{proc_tu} && $i > $conf->{proc_tu} );
+      last if (defined $conf->{gen_tu} && $gen > $conf->{gen_tu} );
+      next if (defined $conf->{patt} && !m/$conf->{patt}/ );
+      s/\>\s+/>/;
+      undef($data);
+      eval {dtstring($_, %h)} ; ## dont die in invalid XML
+      #### dt($self->{filename}, %h);
+      if ($@) {
+          warn($@)
+      }
+      else{
+          #   for my $k (keys %$data) {
+          #     if (exists($files{"$filename-$k"})) {
+          #        myprint($files{"$filename-$k"}, $data->{$k},$i);
+          #     } else {
+          #       my $x;
+          #       open $x, ">$filename-$k" or die("cant >$filename-$k\n");
+          #       myprint($x, $data->{$k},$i);
+          #       $files{"$filename-$k"} = $x;
+          #     }
+          #   }
+      }
   }
+  print STDERR "\r$i\n" if $conf->{verbose};
   close X;
 
 
@@ -345,8 +360,12 @@ sub for_tu {
     $tmx->start_tmx(OUTPUT => $conf->{output});
   }
 
+  my $i = 0;
+  print STDERR "." if $conf->{verbose};
   my %handler = ( -type => { tu => 'SEQ' },
 	  tu  => sub {
+              $i++;
+              print STDERR "\r$i" if $conf->{verbose} && !($i%10);
             my %tu = ();
             for my $va (@$c){
                  if($va->[0] eq "prop" ){  $tu{-prop}{$va->[1]} = $va->[2] }
@@ -378,6 +397,7 @@ sub for_tu {
 		);
 
   dt($self->{filename}, %handler);
+  print STDERR "\r$i\n" if $conf->{verbose};
 
   $tmx->end_tmx if $outputingTMX;
 }
