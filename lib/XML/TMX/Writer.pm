@@ -10,6 +10,8 @@ $VERSION = '0.23';
 @ISA = 'Exporter';
 @EXPORT_OK = qw(&new);
 
+=encoding utf-8
+
 =head1 NAME
 
 XML::TMX::Writer - Perl extension for writing TMX files
@@ -20,7 +22,7 @@ XML::TMX::Writer - Perl extension for writing TMX files
 
    my $tmx = new XML::TMX::Writer();
 
-   $tmx->start_tmx(ID => 'paulojjs');
+   $tmx->start_tmx(id => 'paulojjs');
 
    $tmx->add_tu(SRCLANG => 'en', 'en' => 'some text', 'pt' => 'algum texto');
    $tmx->add_tu(SRCLANG => 'en', 
@@ -52,56 +54,57 @@ Creates a new XML::TMX::Writer object
 sub new {
    my $proto = shift;
    my $class = ref($proto) || $proto;
-   my $self = {};
-
+   my %ops = @_;
+   my $self = { OUTPUT => \*STDOUT };
+   binmode $self->{OUTPUT}, ":utf8" unless exists $ops{-encoding} and $ops{-encoding} !~ /utf.?8/i;
    bless($self, $class);
    return($self);
 }
 
 =head2 start_tmx
 
-  $tmx->start_tmx(OUTPUT => 'some_file.tmx');
+  $tmx->start_tmx(-output => 'some_file.tmx');
 
 Begins a TMX file. Several options are available:
 
-=over 8
+=over 4
 
-=item OUTPUT
+=item -output
 
 Output of the TMX, if none is defined stdout is used by default.
 
-=item TOOL
+=item tool
 
 Tool used to create the TMX. Defaults to 'XML::TMX::Writer'
 
-=item TOOLVERSION
+=item toolversion
 
 Some version identification of the tool used to create the TMX. Defaults
 to the current module version
 
-=item SEGTYPE
+=item segtype
 
 Segment type used in the I<E<lt>tuE<gt>> elements. Possible values are I<block>,
 I<paragraph>, I<sentence> and I<phrase>. Defaults to I<sentence>.
 
-=item SRCTMF
+=item srctmf
 
 Specifies the format of the translation memory file from which the TMX document or
 segment thereof have been generated.
 
-=item ADMINLANG
+=item adminlang
 
 Specifies the default language for the administrative and informative
 elements I<E<lt>noteE<gt>> and I<E<lt>propE<gt>>.
 
-=item SRCLANG
+=item srclang
 
 Specifies the language of the source text. If a I<E<lt>tuE<gt>> element does
 not have a srclang attribute specified, it uses the one defined in the
 I<E<lt>headerE<gt>> element. Defaults to I<*all*>.
 
 
-=item DATATYPE
+=item datatype
 
 Specifies the type of data contained in the element. Depending on that
 type, you may apply different processes to the data.
@@ -109,7 +112,7 @@ type, you may apply different processes to the data.
 The recommended values for the datatype attribute are as follow (this list is
 not exhaustive):
 
-=over
+=over 4
 
 =item unknown
 
@@ -217,7 +220,7 @@ Quark XPressTag
 
 =back
 
-=item SRCENCODING
+=item srcencoding
 
 All TMX documents are in Unicode. However, it is sometimes useful to know
 what code set was used to encode text that was converted to Unicode for
@@ -225,81 +228,119 @@ purposes of interchange. This option specifies the original or preferred
 code set of the data of the element in case it is to be re-encoded in a
 non-Unicode code set. Defaults to none.
 
-=item ID
+=item id
 
 Specifies the identifier of the user who created the element. Defaults to none.
+
+=item -note
+
+A reference to a list of notes to be added in the header.
+
+=item -prop
+
+A reference fo a hash of properties to be added in the header. Keys
+are used as the C<type> attribute, value as the tag contents.
 
 =back
 
 =cut
 
 sub start_tmx {
-   my $self = shift;
-   my %options = @_;
-   my %o;
+    my $self = shift;
+    my %options = @_;
+    my %o;
 
-   # for creationdate -> perldoc -f gmtime
-   my @time = gmtime(time);
-   $o{'creationdate'} = sprintf("%d%02d%02dT%02d%02d%02dZ", $time[5]+1900,
-                      $time[4]+1, $time[3], $time[2], $time[1], $time[0]);
+    my @time = gmtime(time);
+    $o{'creationdate'} = sprintf("%d%02d%02dT%02d%02d%02dZ", $time[5]+1900,
+                                 $time[4]+1, $time[3], $time[2], $time[1], $time[0]);
 
-   my $encoding = $options{ENCODING} || "UTF-8";
+    my $encoding = $options{encoding} || "UTF-8";
 
-   if(exists($options{OUTPUT})) {
-     open $self->{OUTPUT}, ">$options{OUTPUT}" or die "Cannot open file '$options{OUTPUT}': $!\n";
-     binmode $self->{OUTPUT}, ":utf8"      if ($encoding =~ m!utf.?8!i);
-   } else {
-     $self->{OUTPUT} = \*STDOUT;
-   }
+    if (defined($options{'-output'})) {
+        delete $self->{OUTPUT}; # because it is a glob
+        open $self->{OUTPUT}, ">", $options{'-output'}
+          or die "Cannot open file '$options{'-output'}': $!\n";
+    }
 
-   $self->_Write("<?xml version=\"1.0\" encoding=\"$encoding\"?>\n");
+    binmode $self->{OUTPUT}, ":utf8" if $encoding =~ m!utf.?8!i;
 
+    $self->_write("<?xml version=\"1.0\" encoding=\"$encoding\"?>\n");
 
-   $o{'creationtool'} = $options{TOOL} || 'XML::TMX::Writer';
+    my @valid_segtype = qw'block sentence paragraph phrase';
+    if(defined($options{SEGTYPE}) && grep { $_ eq $options{SEGTYPE} } @valid_segtype) {
+        $o{segtype} = $options{SEGTYPE};
+    } else {
+        $o{segtype} = 'sentence'
+    }
 
-   $o{'creationtoolversion'} = $options{TOOLVERSION} || $VERSION;
+    $o{'creationtool'}        = $options{tool}        || 'XML::TMX::Writer';
+    $o{'creationtoolversion'} = $options{toolversion} || $VERSION;
+    $o{'o-tmf'}               = $options{srctmf}      || 'plain text';
+    $o{'adminlang'}           = $options{adminlang}   || 'en';
+    $o{'srclang'}             = $options{srclang}     || 'en';
+    $o{'datatype'}            = $options{datatype}    || 'plaintext';
 
-   if(defined($options{SEGTYPE}) && ($options{SEGTYPE} eq 'block' ||
-        $options{SEGTYPE} eq 'paragraph' || $options{SEGTYPE} eq 'sentence' ||
-        $options{SEGTYPE} eq 'phrase')) {
-      $o{'segtype'} = $options{SEGTYPE};
-   } else {
-      $o{'segtype'} = 'sentence'
-   }
+    defined($options{srcencoding}) and $o{'o-encoding'} = $options{srcencoding};
+    defined($options{id})          and $o{'creationid'} = $options{id};
 
-   $o{'o-tmf'} = $options{SRCTMF} || 'plain text';
+    $self->_startTag(0, 'tmx', 'version' => 1.4)->_nl;
+    $self->_startTag(1, 'header', %o)->_nl;
 
-   $o{'adminlang'} = $options{ADMINLANG} || 'en';
+    $self->_write_props(2, $options{'-prop'}) if defined $options{'-prop'};
+    $self->_write_notes(2, $options{'-note'}) if defined $options{'-note'};
 
-   $o{'srclang'} = $options{SRCLANG} || 'en';  # was '*all*'
+    $self->_indent(1)->_endTag('header')->_nl;
 
-   $o{'datatype'} = $options{DATATYPE} || 'plaintext';
+    $self->_startTag(1,'body')->_nl->_nl;
+}
 
-   if(defined($options{SRCENCODING})) { $o{'o-encoding'} = $options{SRCENCODING}; }
+sub _write_props {
+    my ($self, $indent, $props) = @_;
+    return unless ref($props) eq "HASH";
+    for my $key (sort keys %$props) {
+        if (ref($props->{$key}) eq "ARRAY") {
+            for my $val (@{$props->{$key}}) {
+                if ($key eq "_") {
+                    $self->_startTag($indent, 'prop');
+                } else {
+                    $self->_startTag($indent, prop => (type => $key));
+                }
+                $self->_characters($val);
+                $self->_endTag('prop')->_nl;
+            }
+        } else {
+            if ($key eq "_") {
+                $self->_startTag($indent, 'prop');
+            } else {
+                $self->_startTag($indent, prop => (type => $key));
+            }
+            $self->_characters($props->{$key});
+            $self->_endTag('prop')->_nl;
+        }
+    }
+}
 
-   if(defined($options{ID})) { $o{'creationid'} = $options{ID}; }
-
-   $self->_startTag('tmx', 'version' => 1.4);
-   $self->_Write("\n ");
-   $self->_startTag('header', %o);
-   $self->_Write("\n ");
-   $self->_endTag('header');
-   $self->_Write("\n ");
-   $self->_startTag('body'); #, 'version' => 1.4);
-   $self->_Write("\n");
+sub _write_notes {
+    my ($self, $indent, $notes) = @_;
+    return unless ref($notes) eq "ARRAY";
+    for my $p (@{$notes}) {
+        $self->_startTag($indent, 'note');
+        $self->_characters($p);
+        $self->_endTag('note')->_nl;
+    }
 }
 
 =head2 add_tu
 
-  $tmx->add_tu(SRCLANG => LANG1, LANG1 => 'text1', LANG2 => 'text2');
-  $tmx->add_tu(SRCLANG => LANG1, 
+  $tmx->add_tu(srclang => LANG1, LANG1 => 'text1', LANG2 => 'text2');
+  $tmx->add_tu(srclang => LANG1, 
                LANG1 => 'text1', 
                LANG2 => 'text2',
                -note => ["value1",  ## notes
                         "value2"],
-               -prop => { type1 => "value1",  ## properties
-                         type2 => "value2",
-                         typen => "valuen"}
+               -prop => { type1 => ["value1","value"], #multiple values
+                          _ => 'value2',  # anonymound properties
+                         typen => ["valuen"],}
               );
 
 Adds a translation unit to the TMX file. Several optional labels can be
@@ -307,25 +348,25 @@ specified:
 
 =over
 
-=item ID
+=item id
 
 Specifies an identifier for the I<E<lt>tuE<gt>> element. Its value is not
 defined by the standard (it could be unique or not, numeric or
 alphanumeric, etc.).
 
-=item SRCENCODING
+=item srcencoding
 
 Same meaning as told in B<start_tmx> method.
 
-=item DATATYPE
+=item datatype
 
 Same meaning as told in B<start_tmx> method.
 
-=item SEGTYPE
+=item segtype
 
 Same meaning as told in B<start_tmx> method.
 
-=item SRCLANG
+=item srclang
 
 Same meaning as told in B<start_tmx> method.
 
@@ -334,81 +375,68 @@ Same meaning as told in B<start_tmx> method.
 =cut
 
 sub add_tu {
-   my $self = shift;
-   my %tuv = @_;
-   my %prop = ();
-   my @note = ();
-   my %opt;
+    my $self = shift;
+    my %tuv = @_;
+    my %prop = ();
+    my @note = ();
+    my %opt;
 
-   if(defined($tuv{ID})) {
-      $opt{'tuid'} = $tuv{ID};
-      delete($tuv{ID});
-   }
+    my $verbatim = 0;
+    my $cdata = 0;
 
-   if(defined($tuv{SRCENCODING})) {
-      $opt{'o-encoding'} = $tuv{SRCENCODING};
-      delete($tuv{SRCENCODING});
-   }
+    for my $key (qw'id datatype segtype srclang creationid creationdate') {
+        if (exists($tuv{$key})) {
+            $opt{$key} = $tuv{$key};
+            delete $tuv{$key};
+        }
+    }
+    if (defined($tuv{srcencoding})) {
+        $opt{'o-encoding'} = $tuv{srcencoding};
+        delete $tuv{srcencoding};
+    }
+    $verbatim++            if defined $tuv{-verbatim};
+    delete $tuv{-verbatim} if exists  $tuv{-verbatim};
 
-   if(defined($tuv{DATATYPE})) {
-      $opt{'datatype'} = $tuv{DATATYPE};
-      delete($tuv{DATATYPE});
-   }
+    if (defined($tuv{"-prop"})) {
+        %prop = %{$tuv{"-prop"}};
+        delete $tuv{"-prop"};
+    }
+    if (defined($tuv{"-note"})) {
+        @note = @{$tuv{"-note"}};
+        delete $tuv{"-note"};
+    }
 
-   if(defined($tuv{SEGTYPE})) {
-      $opt{'segtype'} = $tuv{SEGTYPE};
-      delete($tuv{SEGTYPE});
-   }
+    $self->_startTag(2,'tu', %opt)->_nl;
 
-   if(defined($tuv{SRCLANG})) {
-      $opt{'srclang'} = $tuv{SRCLANG};
-      delete($tuv{SRCLANG});
-   }
+    ### write the prop s <prop type="x-name">problemas 23</prop>
+    $self->_write_props(3, \%prop);
+    $self->_write_notes(3, \@note);
 
-   if(defined($tuv{"-prop"})) {
-      %prop = %{$tuv{"-prop"}};
-      delete($tuv{"-prop"});
-   }
+    for my $lang (keys %tuv) {
+        my $cdata = 0;
+        $self->_startTag(3, 'tuv', 'xml:lang' => $lang)->_nl;
+        if (ref($tuv{$lang}) eq "HASH") {
+            $cdata++ if defined($tuv{$lang}{-iscdata});
+            delete($tuv{$lang}{-iscdata}) if exists($tuv{$lang}{-iscdata});
 
-   if(defined($tuv{"-note"})) {
-      @note = @{$tuv{"-note"}};
-      delete($tuv{"-note"});
-   }
-
-   $self->_Write("\n  ");
-   $self->_startTag('tu', %opt);
-   $self->_Write("\n");
-
-   ### write the prop s <prop type="x-name">problemas 23</prop>
-   for my $p (keys %prop) {
-      $self->_Write("   ");
-      $self->_startTag('prop', 'type' => $p);
-      $self->_characters($prop{$p});
-      $self->_endTag('prop');
-      $self->_Write("\n");
-   }
-
-   ### write the prop s <prop type="x-name">problemas 23</prop>
-   for my $p (@note) {
-      $self->_Write("   ");
-      $self->_startTag('note');
-      $self->_characters($p);
-      $self->_endTag('note');
-      $self->_Write("\n");
-   }
-
-   for my $lang (keys %tuv) {
-      $self->_Write("   ");
-      $self->_startTag('tuv', 'xml:lang' => $lang);
-      $self->_startTag('seg');
-      $self->_characters($tuv{$lang});
-      $self->_endTag('seg');
-      $self->_endTag('tuv');
-      $self->_Write("\n");
-   }
-   $self->_Write("  ");
-   $self->_endTag('tu');
-   $self->_Write("\n");
+            $self->_write_props(4, $tuv{$lang}{-prop}) if exists $tuv{$lang}{-prop};
+            $self->_write_notes(4, $tuv{$lang}{-note}) if exists $tuv{$lang}{-note};
+            $tuv{$lang} = $tuv{$lang}{-seg} || "";
+        }
+        $self->_startTag(4, 'seg');
+        if ($verbatim) {
+            $self->_write($tuv{$lang});
+        } elsif ($cdata) {
+            $self->_write("<![CDATA[");
+            $self->_write($tuv{$lang});
+            $self->_write("]]>");
+        } else {
+            $self->_characters($tuv{$lang});
+        }
+        $self->_endTag('seg')->_nl;
+        $self->_indent(3)->_endTag('tuv')->_nl;
+    }
+    $self->_indent(2)->_endTag('tu')->_nl->_nl;
 }
 
 
@@ -421,15 +449,10 @@ Ends the TMX file, closing file handles if necessary.
 =cut
 
 sub end_tmx {
-   my $self = shift();
-   $self->_Write(" ");
-   $self->_endTag('body');
-   $self->_Write("\n");
-   $self->_endTag('tmx');
-   $self->_Write("\n");
-   #$self->{XML}->end();
-   #$self->{OUTPUT}->close() if(defined($self->{OUTPUT}));
-   close($self->{OUTPUT});
+    my $self = shift();
+    $self->_indent(1)->_endTag('body')->_nl;
+    $self->_endTag('tmx')->_nl;
+    close($self->{OUTPUT});
 }
 
 =head1 SEE ALSO
@@ -440,7 +463,7 @@ TMX Specification L<http://www.lisa.org/tmx/tmx.htm>
 
 Paulo Jorge Jesus Silva, E<lt>paulojjs@bragatel.ptE<gt>
 
-Alberto Simıes, E<lt>albie@alfarrabio.di.uminho.ptE<gt>
+Alberto Sim√µes, E<lt>albie@alfarrabio.di.uminho.ptE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
@@ -451,36 +474,47 @@ it under the same terms as Perl itself.
 
 =cut
 
-sub _Write {
-  my $self = shift;
-  print {$self->{OUTPUT}} @_;
+sub _write {
+    my $self = shift;
+    print {$self->{OUTPUT}} @_;
+    return $self;
+}
+
+sub _nl {
+    my $self = shift;
+    $self->_write("\n");
 }
 
 sub _startTag {
-  my ($self, $tagName, %attributes) = @_;
-
+  my ($self, $indent, $tagName, %attributes) = @_;
   my $attributes = "";
-  $attributes = " ".join(" ",map {"$_=\"$attributes{$_}\""} keys %attributes) if %attributes;
-  $self->_Write("<$tagName$attributes>");
+  $attributes = " ".join(" ",map {"$_=\"$attributes{$_}\""} sort keys %attributes) if %attributes;
+  $self->_indent($indent)->_write("<$tagName$attributes>");
+}
+
+sub _indent {
+    my ($self, $indent) = @_;
+    $indent = "  " x $indent;
+    $self->_write($indent);
 }
 
 sub _characters {
-  my ($self, $text) = @_;
+    my ($self, $text) = @_;
 
-  $text = "" unless defined $text;
-  $text =~ s/\n/ /g;
-  $text =~ s/  +/ /g;
-  $text =~ s/\&/\&amp;/g;
-  $text =~ s/</\&lt;/g;
-  $text =~ s/>/\&gt;/g;
+    $text = "" unless defined $text;
+    $text =~ s/\n/ /g;
+    $text =~ s/  +/ /g;
+    $text =~ s/&/&amp;/g;
+    $text =~ s/</&lt;/g;
+    $text =~ s/>/&gt;/g;
 
-  $self->_Write($text);
+    $self->_write($text);
 }
 
 sub _endTag {
-  my ($self, $tagName) = @_;
+    my ($self, $tagName) = @_;
 
-  $self->_Write("</$tagName>");
+    $self->_write("</$tagName>");
 }
 
 1;

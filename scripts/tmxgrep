@@ -23,7 +23,7 @@ my $tmx = shift;
 my $tmx_obj = XML::TMX::Reader->new($tmx);
 
 
- $tmx_obj->for_tu2( 
+ $tmx_obj->for_tu( 
     { patt => $p, 
       gen_tu=> $max, 
       output => "__.tmx" },
@@ -49,7 +49,7 @@ tmxgrep - grep translation units in a TMX file
 
  tmxgrep <perlregexp> file.tmx
  options:
-   -pdf      -- ouput is transformed in a PDF file 
+   -pdf      -- output is transformed in a PDF file 
    -max=300  -- extract up to 300 TU (def=200)
    -max=0    -- all matches
 

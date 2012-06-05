@@ -1,24 +1,42 @@
 use ExtUtils::MakeMaker;
 
+warn <<EOW;
+
+ ---------------------------------------------------------
+  NOTICE! NOTICE! NOTICE! NOTICE! NOTICE! NOTICE! NOTICE!
+
+    XML::TMX::Reader and XML::TMX::Writer APIs changed,
+    and backward compatibility was broken. The changes
+    are not too complicated, but you will need to update
+    your code.
+
+                        Thank you for your understanding
+
+
+  NOTICE! NOTICE! NOTICE! NOTICE! NOTICE! NOTICE! NOTICE!
+ ---------------------------------------------------------
+
+EOW
+
 WriteMakefile(
 	      'NAME'           => 'XML::TMX',
 	      'VERSION_FROM'   => 'lib/XML/TMX.pm',
 	      'AUTHOR'         => 'Projecto Natura',
 	      'ABSTRACT'       => 'TMX tools',
 	      'EXE_FILES'      => [
-                                   qw!scripts/po2tmx
-                                      scripts/tmxsplit
+                                   qw!scripts/tmxsplit
                                       scripts/tmxuniq
+                                      scripts/tmx-POStagger
+                                      scripts/tmx-tokenize
                                       scripts/tmxclean
                                       scripts/tmxwc
                                       scripts/tmx2html
                                       scripts/tmxgrep
-                                      scripts/xpdf-tmx
                                       scripts/tmx2tmx!],
 	      'PREREQ_PM'      => {
 				   'Test::Pod'           => '1.00',
 				   'Test::Pod::Coverage' => '0.08',
-				   'XML::DT'             => '0.27',
+				   'XML::DT'             => '0.57',
 				   'Exporter'            => '0',
 				  },
 	     );

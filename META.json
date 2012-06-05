@@ -4,7 +4,7 @@
       "Projecto Natura"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.62, CPAN::Meta::Converter version 2.113640",
+   "generated_by" : "ExtUtils::MakeMaker version 6.62, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "unknown"
    ],
@@ -22,23 +22,23 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : 0
+            "ExtUtils::MakeMaker" : "0"
          }
       },
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : 0
+            "ExtUtils::MakeMaker" : "0"
          }
       },
       "runtime" : {
          "requires" : {
-            "Exporter" : 0,
+            "Exporter" : "0",
             "Test::Pod" : "1.00",
             "Test::Pod::Coverage" : "0.08",
-            "XML::DT" : "0.27"
+            "XML::DT" : "0.57"
          }
       }
    },
    "release_status" : "stable",
-   "version" : "0.20"
+   "version" : "0.21"
 }

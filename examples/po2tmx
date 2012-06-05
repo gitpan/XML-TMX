@@ -10,8 +10,21 @@ use XML::TMX::FromPO;
 my $tmx = new XML::TMX::FromPO(DEBUG => 1);
 my %convert = ( 'pt_en' => 'pt en',
                 'pt_es' => 'pt es',
-                'pt_br' => 'pt pt_br',
-                'en_fr' => 'en fr');
+                'pt_de' => 'pt de',
+                'pt_it' => 'pt it',
+                'pt_ru' => 'pt ru',
+                'pt_fr' => 'pt fr',
+                'pt_br' => 'pt pt_BR',
+
+                'br_en' => 'pt_BR en',
+                'br_es' => 'pt_BR es',
+                'br_de' => 'pt_BR de',
+                'br_it' => 'pt_BR it',
+                'br_ru' => 'pt_BR ru',
+                'br_fr' => 'pt_BR fr',
+
+                'en_fr' => 'en fr'
+              );
 
 if($s){
   my $lang = $s;
@@ -24,6 +37,7 @@ if($s){
       *STDOUT = *XML;
       $tmx->create_tmx(LANG => "$lang en");
       close(XML);
+      $tmx->clean_tmx()
   }
 }
 else{
@@ -34,7 +48,8 @@ else{
   }
 
   while(my $dir = shift()) {
-      $tmx->parse_dir("$dir/po", LANG => $lang);
+      if(-d "$dir/po" and <$dir/po/*.po>){ $tmx->parse_dir("$dir/po", LANG => $lang) ; }
+      if(-d "$dir"    and <$dir/*.po>)   { $tmx->parse_dir("$dir",    LANG => $lang) ; }
       $dir =~ m/([a-z0-9_\.-]+)\/*$/i;
       for my $conv (keys %convert) {
          open(XML, "|xmllint --format - | bzip2 > $1_$conv.tmx.bz2");
@@ -42,5 +57,26 @@ else{
          $tmx->create_tmx(LANG => "$convert{$conv}");
          close(XML);
       }
+      $tmx->clean_tmx()
   }
 }
+
+=encoding UTF-8
+
+=head1 NAME
+
+po2tmx - create TMX file from PO file ???
+
+=head1 SYNOPSIS
+
+   $ po2tmx ...  # ???
+
+=head1 DESCRIPTION
+
+???
+
+=head1 SEE ALSO
+
+XML::TMX
+
+=cut

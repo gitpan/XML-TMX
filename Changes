@@ -1,5 +1,26 @@
 Revision history for Perl extension XML::TMX.
 
+0.21   Jun 5, 2012
+        - properly encode UTF-8
+
+       Scripts
+        - tmx2tmx -cat preserves props and notes from all documents
+        - add POD to some scripts
+        - added tmx-tokenize
+        - Moved some scripts to example folder
+
+       Reader
+        - save info about CDATA sections
+        - add -raw option on for_tu2
+        - for_tu2 renamed as for_tu
+        - reads header correctly (props and notes)
+
+       Writer
+        - write correctly CDATA sections
+        - better output
+        - handle header props and notes
+        - more testing
+
 0.20   Jan 31, 2012
         - add 'verbose' option to for_tu family of methods
 
@@ -14,7 +35,7 @@ Revision history for Perl extension XML::TMX.
 	- Added tmxwc and tmxclean scripts.
 
 0.16   Fev  5, 2007
-	- refactoed for_tu2 function (it used $&, $` and $').
+	- refactored for_tu2 function (it used $&, $` and $').
 
 0.15   Dec  9, 2006
         - new for_tu2 function that will soon replace for_tu

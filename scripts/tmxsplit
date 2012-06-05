@@ -59,7 +59,7 @@ for $f (@ARGV){
     print STDERR "." if ($i % 1000==0);
     s/\>\s+/>/;
     undef($data);
-    eval {dtstring($_, %h)} ; ## dont die in invalid XML
+    eval {dtstring($_, %h)} ; ## don't die in invalid XML
     if($@){warn($@)}
     else{
       for my $k (keys %$data) {
@@ -88,8 +88,8 @@ sub myprint{
     for ($tu){
       s/<.*?>/ /gs;
       s/[\|\$]/ /gs;
-      s/(\w)([.;,!:?«»"])/$1 $2/g;
-      s/([.;,!:?«»"])(\w)/$1 $2/g;
+      s/(\w)([.;,!:?Â«Â»"])/$1 $2/g;
+      s/([.;,!:?Â«Â»"])(\w)/$1 $2/g;
       s/\s\s+|^\s+|\s+$/ /g;
     }
     print {$f} "$tu\n\$\n";
@@ -99,6 +99,8 @@ sub myprint{
 }
 
 __END__
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -123,13 +125,13 @@ The names for output files is based on the first tmx file supplied.
  -latin1  -- a make latin1-encoded output
  -utf8    -- a make   utf8-encoded output
 
- -q       -- dont print filenames and "."
+ -q       -- don't print filenames and "."
 
  -cutmaxlen=n -- cut translations by the n character
 
 =head1 AUTHOR
 
-Alberto Simões, albie@di.uminho.pt
+Alberto SimÃµes, albie@di.uminho.pt
 
 J.Joao Almeida, jj@di.uminho.pt
 

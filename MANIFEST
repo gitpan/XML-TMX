@@ -6,10 +6,8 @@ Changes
 lib/XML/TMX/Writer.pm
 lib/XML/TMX/FromPO.pm
 lib/XML/TMX/Reader.pm
-lib/XML/TMX/Query.pm
 lib/XML/TMX.pm
 
-scripts/po2tmx
 scripts/tmx2tmx
 scripts/tmx2html
 scripts/tmxsplit
@@ -17,19 +15,26 @@ scripts/tmxuniq
 scripts/tmxgrep
 scripts/tmxwc
 scripts/tmxclean
-scripts/xpdf-tmx
+scripts/tmx-explode
+scripts/tmx-tokenize
+scripts/tmx-POStagger
+
+examples/xpdf-tmx
+examples/po2tmx
 
 t/01_main.t
 t/10_writer.t
 t/20_reader.t
-t/40_query.t
+t/25_for_tu.t
+t/50_tmxcat.t
 t/80_frompo.t
 t/98_pod.t
 t/99_pod-coverage.t
 
-
 t/sample.tmx
 t/writer1.xml
+t/writer2.xml
+t/cat.xml
 
 META.yml                                 Module meta-data (added by MakeMaker)
 META.json                                Module JSON meta-data (added by MakeMaker)

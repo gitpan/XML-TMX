@@ -1,5 +1,7 @@
 #!/usr/bin/perl -s
 
+### NOT IN DISTRO
+
 our ($m);
 
 $m ||= 1000;

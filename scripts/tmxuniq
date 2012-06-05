@@ -6,12 +6,7 @@ use XML::TMX::Reader;
 use Digest::MD5 qw(md5_hex);
 use Encode;
 
-our ($cont,$l,$id,$dig,$tok,$clean,$o);
-
-my ($l1,$l2);
-
-if($l =~ /(.+):(.+)/){ ($l1,$l2)=($1,$2) }
-die ("usage: $0 [-cont] -l=en:pt tmx ...\n") unless @ARGV ;
+our ($cont,$id,$dig,$tok,$o);
 
 if ($cont) {
     tie %dic, 'DB_File', "__tmxuniq_$$.db", O_RDWR|O_CREAT , 0640, $DB_BTREE;
@@ -24,26 +19,18 @@ my $cid = 0;
 for my $file (@ARGV){
     my $tm = XML::TMX::Reader->new($file);
 
-    if (not defined $l1) {
-        ($l1,$l2) = sort ($tm->languages);
-        print STDERR "Using languages: $l1/$l2\n";
-    }
     print STDERR "Processing...";
 
-    $tm->for_tu2
+    $tm->for_tu
       (
        { output => $o || "$file._" },
        sub {
            my $tu = shift;
            $cid ++;
            $tu->{-prop}{id}= $cid if $id;
-           $tu->{$l1} = n($tu->{$l1});
-           $tu->{$l2} = n($tu->{$l2});
-           if($clean and $tu->{$l1} eq $tu->{$l2} || $tu->{$l1} !~ /\w/ ){
-               $rem ++;
-               return undef
-           }
-           my $digest = md5_hex(encode_utf8("$tu->{$l1},$tu->{$l2}"));
+
+           my $key = join("|||", map { n($tu->{$_}{-seg}) } sort grep { !/^-/ } keys %$tu);
+           my $digest = md5_hex(encode_utf8($key));
 
            unless ($cid % 10000) {
                my $size = -s "__tmxuniq_$$.db";
@@ -65,8 +52,12 @@ for my $file (@ARGV){
       );
 
     my $size = -s "__tmxuniq_$$.db";
-    printf STDERR "\rTotal: %10d  Removed: %8d (%.2f%%)  Database size: %10d bytes\n",
-      $cid, $rem, (100*$rem/$cid), $size;
+    if ($cid) {
+        printf STDERR "\rTotal: %10d  Removed: %8d (%.2f%%)  Database size: %10d bytes\n",
+          $cid, $rem, (100*$rem/$cid), $size;
+    } else {
+        printf STDERR "\rHuh.. empty TMX?\n";
+    }
     undef $tm;
 }
 untie %h;
@@ -105,7 +96,6 @@ Memory eXange format).
  -id  -- insert a uniq id property in each TU
  -dig -- insert a digest property in each TU
  -tok -- tokenize/normalize text
- -clean     --  remove if seg(l1) = seg(l2) or if no letter found
  -o=out.tmx -- (with 1 argument) redefine output (default = input._)
 
 =head1 AUTHOR

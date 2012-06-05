@@ -22,7 +22,7 @@ $output ||= "_cleaned_$tmx";
 
 print STDERR "loading..." if $v;
 
-$reader->for_tu2( {output => $output},
+$reader->for_tu( {output => $output},
                   \&cleaner);
 
 printf STDERR "\rRemoved %d/%d (%.3f%%).\n", 
@@ -48,3 +48,23 @@ sub help {
     print "   tmxclean [-junk=1] <file.tmx>\n";
     exit 1;
 }
+
+=encoding UTF-8
+
+=head1 NAME
+
+tmx-clean - clean TMX files ???
+
+=head1 SYNOPSIS
+
+   $ tmx-clean file.tmx  # ???
+
+=head1 DESCRIPTION
+
+???
+
+=head1 SEE ALSO
+
+XML::TMX
+
+=cut

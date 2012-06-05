@@ -10,7 +10,7 @@ for my $file (@ARGV) {
     my $tm = XML::TMX::Reader->new($file);
 
     my $TU = 0;
-    $tm->for_tu2(
+    $tm->for_tu({-raw => 1 },
                  sub { $TU++ ;
                        print STDERR "\r$TU..." unless $TU%1000;
                    }
@@ -22,6 +22,8 @@ for my $file (@ARGV) {
 print STDERR "total: $TTU tu.\n" if $n > 1;
 
 __END__
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -38,7 +40,7 @@ translation units.
 
 =head1 AUTHOR
 
-Alberto Simıes, E<lt>ambs@cpan.orgE<gt>
+Alberto Sim√µes, E<lt>ambs@cpan.orgE<gt>
 
 =head1 SEE ALSO
 
