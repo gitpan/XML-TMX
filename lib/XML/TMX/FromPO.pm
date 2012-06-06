@@ -13,6 +13,8 @@ use vars qw(@ISA @EXPORT_OK);
 
 =pod
 
+=encoding utf-8
+
 =head1 NAME
 
 XML::TMX::FromPO - Generates a TMX file from a group of PO files
@@ -101,7 +103,7 @@ sub rec_get_po {
          rec_get_po($self,$file,$lan1)
       }
       else {
-         ## warn ("$file ... não tem lingua\n") if($self->{DEBUG});
+         ## warn ("$file ... nÃ£o tem lingua\n") if($self->{DEBUG});
       }
     }
    }
@@ -134,7 +136,7 @@ sub parse_dir {
             __processa($self, $file, $lang);
          }
       } else {
-         warn ("$file ... não tem lingua\n") if($self->{DEBUG});
+         warn ("$file ... nÃ£o tem lingua\n") if($self->{DEBUG});
       }
    }
 
@@ -282,26 +284,26 @@ sub __processa {
 sub __limpa {
    my $self = shift;
 
-   # possíveis limpezas
-   # (1) eliminar traduções que sejam igual ao original
-   # (2) eliminar strings que não contenham pelo menos 2 letras
+   # possÃ­veis limpezas
+   # (1) eliminar traduÃ§Ãµes que sejam igual ao original
+   # (2) eliminar strings que nÃ£o contenham pelo menos 2 letras
    #     consecutivas
-   # (3) eliminar frases que fiquem sem traduções
+   # (3) eliminar frases que fiquem sem traduÃ§Ãµes
    #
-   # um teste realizado com os po's do evolution mostrou uma redução do
-   # ficheiro final de 12M para 8,6M, uma análise com o diff aos dumps
+   # um teste realizado com os po's do evolution mostrou uma reduÃ§Ã£o do
+   # ficheiro final de 12M para 8,6M, uma anÃ¡lise com o diff aos dumps
    # permitiu ver que grande parte do ''lixo'' eram de (1)
 
    for my $h1 (keys %{$self->{TMX}}) {
       if($h1 =~ /[a-z][a-z]/i) {
          for my $h2 (keys %{$self->{TMX}{$h1}}) {
-            # optimização (1)
+            # optimizaÃ§Ã£o (1)
             delete($self->{TMX}{$h1}{$h2}) if($h2 !~ /^en/i && $h1 eq $self->{TMX}{$h1}{$h2});
          }
-         # optimização (3)
+         # optimizaÃ§Ã£o (3)
          delete($self->{TMX}{$h1}) unless(keys %{$self->{TMX}{$h1}});
       } else {
-         # optimização (2)
+         # optimizaÃ§Ã£o (2)
          delete($self->{TMX}{$h1});
       }
    }

@@ -1,5 +1,8 @@
 Revision history for Perl extension XML::TMX.
 
+0.22   Jun 6, 2012
+        - more UTF-8 pod stuff
+
 0.21   Jun 5, 2012
         - properly encode UTF-8
 
