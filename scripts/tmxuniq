@@ -46,7 +46,8 @@ for my $file (@ARGV){
            } else {
                $dic{$digest} = "$cid;";
                $tu->{-prop}{digest}=$digest if $dig;
-               return {%$tu} ;
+               return {%$tu} ; # used clone.. no idea why
+               return $tu
            }
        }
       );

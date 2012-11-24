@@ -187,6 +187,20 @@ Pass the XML directly to the method instead of parsing it.
 
 Use segment contents verbatim, without any normalization.
 
+=item C<-prop>
+
+A hashref of properties to be B<added> to the TMX header block.
+
+=item C<-note>
+
+An arrayref of notes to be B<added> to the TMX header block.
+
+=item C<-header>
+
+A boolean value. If set to true, the heading tags (and closing tag) of
+the TMX file are written. Otherwise, only the translation unit tags
+are written.
+
 =back
 
 The function will receive two arguments:
@@ -216,6 +230,41 @@ values their respective translation.
 
 
 =cut
+
+sub _merge_notes {
+    my ($orig, $new) = @_;
+
+    $orig //= [];
+    $orig = [$orig] unless ref $orig eq "ARRAY";
+    $new  = [$new]  unless ref $new  eq "ARRAY";
+
+    push @$orig => grep { my $x = $_; !grep { $x eq $_} @$orig } @$new;
+
+    return $orig;
+}
+
+sub _merge_props {
+    my ($orig, $new) = @_;
+    die "-prop should be hash" if $orig and ref $orig ne "HASH";
+    die "-prop should be hash" if $new  and ref $new  ne "HASH";
+
+    for my $key (keys %$new) {
+        $orig->{$key} = _merge_notes($orig->{$key}, $new->{$key});
+    }
+    return $orig;
+}
+
+sub _compute_header {
+    my ($current, $conf) = @_;
+    my %header = %$current;
+    if (exists($conf->{-note})) {
+        $header{-note} = _merge_notes($header{-note}, $conf->{-note});
+    }
+    if (exists($conf->{-prop})) {
+        $header{-prop} = _merge_props($header{-prop}, $conf->{-prop});
+    }
+    return \%header;
+}
 
 sub for_tu {
     my $self = shift;
@@ -253,10 +302,8 @@ sub for_tu {
                      $outputingTMX = 1;
                      $tmx = XML::TMX::Writer->new();
                      if ($conf->{-header}) {
-                         my %header = %{$self->{header}};
-                         exists($conf->{-prop}) and $header{-prop} = $conf->{-prop};
-                         exists($conf->{-note}) and $header{-note} = $conf->{-note};
-                         $tmx->start_tmx(encoding => $self->{encoding}, %header);
+                         my $header = _compute_header($self->{header}, $conf);
+                         $tmx->start_tmx(encoding => $self->{encoding}, %$header);
                      }
                  }
                  # Add the translation unit
@@ -322,12 +369,10 @@ sub for_tu {
         $outputingTMX = 1;
         $tmx = XML::TMX::Writer->new();
         if ($conf->{-header}) {
-            my %header = %{$self->{header}};
-            exists($conf->{-prop}) and $header{-prop} = $conf->{-prop};
-            exists($conf->{-note}) and $header{-note} = $conf->{-note};
+            my $header = _compute_header($self->{header}, $conf);
             $tmx->start_tmx(encoding => $self->{encoding},
                             -output  => $conf->{-output},
-                            %header);
+                            %$header);
         }
     }
 

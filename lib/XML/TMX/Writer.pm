@@ -8,7 +8,7 @@ use vars qw($VERSION @ISA @EXPORT_OK);
 
 $VERSION = '0.23';
 @ISA = 'Exporter';
-@EXPORT_OK = qw(&new);
+@EXPORT_OK = qw();
 
 =encoding utf-8
 
@@ -20,7 +20,7 @@ XML::TMX::Writer - Perl extension for writing TMX files
 
    use XML::TMX::Writer;
 
-   my $tmx = new XML::TMX::Writer();
+   my $tmx = XML::TMX::Writer->new();
 
    $tmx->start_tmx(id => 'paulojjs');
 
@@ -412,7 +412,7 @@ sub add_tu {
     $self->_write_props(3, \%prop);
     $self->_write_notes(3, \@note);
 
-    for my $lang (keys %tuv) {
+    for my $lang (sort keys %tuv) {
         my $cdata = 0;
         $self->_startTag(3, 'tuv', 'xml:lang' => $lang)->_nl;
         if (ref($tuv{$lang}) eq "HASH") {

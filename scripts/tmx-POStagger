@@ -3,7 +3,10 @@
 use strict;
 use warnings;
 
-our $o;
+our (
+     $o, # output filename
+     $mwe, # tag mwe  -- STILL NOT SUPPORTED
+    );
 
 eval { require FL3 };
 die "This XML::TMX script requires Lingua::FreeLing3 to be installed\n" if $@;
@@ -13,6 +16,7 @@ eval { require Lingua::FreeLing3::Word };
 die "This XML::TMX script requires Lingua::FreeLing3 to be installed\n" if $@;
 Lingua::FreeLing3::Word->import();
 
+my %initted = ();
 
 use XML::TMX::Reader '0.25';
 
@@ -27,6 +31,13 @@ binmode STDOUT, ":utf8";
 $reader->for_tu(
                 {
                  -output => $output,
+                 -prop => {
+                           'tagged' => "true",
+                           'fields' => "word,lemma,pos",
+                           's-attribute' => [
+                                             's',
+                                            ],
+                          },
                  -verbose => 1,
                  -verbatim => 1,
                 },
@@ -34,25 +45,40 @@ $reader->for_tu(
                     my $tu = shift;
                     for my $lang (keys %$tu) {
                         if ($lang =~ /(pt|es|it|ru|en)/i) {
-                            my $seg = "";
                             my $ln = lc $1;
+                            my $seg = "<![CDATA[";
+
+                            _init_ma($ln) unless exists $initted{$ln};
+
                             my $txt = $tu->{$lang}{-seg};
                             my @tokens = map { Lingua::FreeLing3::Word->new($_) } split /\s+/, $txt;
-                            my $sentences = splitter($lang)->split(\@tokens);
-                            $sentences = morph($lang)->analyze($sentences);
-                            $sentences = hmm($lang)->tag($sentences);
+                            my $sentences = splitter($ln)->split(\@tokens);
+                            $sentences = morph($ln)->analyze($sentences);
+                            $sentences = hmm($ln)->tag($sentences);
                             for my $s (@$sentences) {
                                 $seg .= "<s>\n";
                                 $seg .= _dump_words($s->words);
                                 $seg .= "</s>\n";
                             }
                             $tu->{$lang}{-iscdata} = 1;
-                            $tu->{$lang}{-seg} = $seg;
+                            $tu->{$lang}{-seg} = $seg . "]]>";
                         }
                     }
                     return $tu;
                  });
 
+sub _init_ma {
+    my $lang = shift;
+
+    morph($lang,
+          QuantitiesDetection => 0,
+          MultiwordsDetection => 0,
+          NumbersDetection => 0,
+          DatesDetection => 0,
+          NERecognition => 0);
+
+    $initted{$lang}++;
+}
 
 sub _dump_words {
     my @words = @_;
@@ -63,7 +89,7 @@ sub _dump_words {
             $seg .= _dump_words($t->get_mw_words);
             $seg .= "</mwu>\n";
         } else {
-            $seg .= $t->form() ."\t". $t->lemma() ."\t". $t->tag() ."\n"
+            $seg .= $t->form() ."\t". $t->lemma() ."\t". $t->tag() ."\n";
         }
     }
     return $seg;

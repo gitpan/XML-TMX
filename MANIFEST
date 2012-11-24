@@ -37,4 +37,5 @@ t/writer2.xml
 t/cat.xml
 
 META.yml                                 Module meta-data (added by MakeMaker)
+t/00-aux.t
 META.json                                Module JSON meta-data (added by MakeMaker)

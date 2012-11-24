@@ -15,9 +15,6 @@
       <note>snote1</note>
       <note>snote2</note>
       <note>snote3</note>
-      <tuv xml:lang="pt">
-        <seg>algum texto</seg>
-      </tuv>
       <tuv xml:lang="en">
         <prop type="a">b</prop>
         <prop type="c">d</prop>
@@ -26,6 +23,9 @@
         <note>c</note>
         <note>d</note>
         <seg>some text</seg>
+      </tuv>
+      <tuv xml:lang="pt">
+        <seg>algum texto</seg>
       </tuv>
     </tu>
 

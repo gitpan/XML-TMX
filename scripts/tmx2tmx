@@ -254,6 +254,7 @@ sub selectl {
     while ($tmx = shift @files) {
         die "Can't find $tmx" if (!$tmx || !-f$tmx);
 
+        print STDERR "$tmx\n";
         my $reader = XML::TMX::Reader->new($tmx);
         $reader->for_tu(
                         {

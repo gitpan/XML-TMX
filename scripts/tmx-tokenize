@@ -30,9 +30,11 @@ $reader->for_tu( {
                          if ($lang =~ /(pt|es|it|ru|en)/i) {
                              my $ln = lc $1;
                              my $txt = $tu->{$lang}{-seg};
+                             if ($txt !~ /^\s*$/) {
                              $txt = join(" ",
                                          @{ tokenizer($ln)->tokenize($txt,
                                                                      to_text => 1)});
+                             }
                              $tu->{$lang}{-seg} = $txt;
                          }
                      }

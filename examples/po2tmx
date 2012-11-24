@@ -65,15 +65,17 @@ else{
 
 =head1 NAME
 
-po2tmx - create TMX file from PO file ???
+po2tmx - creates TMX files from PO files
 
 =head1 SYNOPSIS
 
-   $ po2tmx ...  # ???
+   po2tmx  POdir   # 
+   po2tmx  -s=fr   #single PO files en-fr (does not join multiple PO-files)
 
 =head1 DESCRIPTION
 
-???
+read several POs, and joinds their translation units to build several 
+TMX pairs.
 
 =head1 SEE ALSO
 
