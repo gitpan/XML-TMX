@@ -1,6 +1,6 @@
 package XML::TMX::Reader;
 
-use 5.004;
+use 5.010;
 use warnings;
 use strict;
 use Exporter ();

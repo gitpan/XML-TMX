@@ -4,12 +4,12 @@ package XML::TMX;
 use 5.004;
 use warnings;
 use strict;
-use Exporter ();
-use vars qw($VERSION @ISA @EXPORT_OK);
 
-$VERSION = '0.23';
-@ISA = 'Exporter';
-@EXPORT_OK = qw();
+use parent 'Exporter';
+
+our $VERSION = '0.24';
+our @ISA = 'Exporter';
+our @EXPORT_OK = qw();
 
 =encoding utf-8
 

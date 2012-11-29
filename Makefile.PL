@@ -1,22 +1,6 @@
 use ExtUtils::MakeMaker;
 
-warn <<EOW;
-
- ---------------------------------------------------------
-  NOTICE! NOTICE! NOTICE! NOTICE! NOTICE! NOTICE! NOTICE!
-
-    XML::TMX::Reader and XML::TMX::Writer APIs changed,
-    and backward compatibility was broken. The changes
-    are not too complicated, but you will need to update
-    your code.
-
-                        Thank you for your understanding
-
-
-  NOTICE! NOTICE! NOTICE! NOTICE! NOTICE! NOTICE! NOTICE!
- ---------------------------------------------------------
-
-EOW
+use 5.010;
 
 WriteMakefile(
 	      'NAME'           => 'XML::TMX',
