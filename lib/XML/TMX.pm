@@ -7,7 +7,7 @@ use strict;
 
 use parent 'Exporter';
 
-our $VERSION = '0.24';
+our $VERSION = '0.25';
 our @ISA = 'Exporter';
 our @EXPORT_OK = qw();
 

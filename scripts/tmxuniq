@@ -6,7 +6,7 @@ use XML::TMX::Reader;
 use Digest::MD5 qw(md5_hex);
 use Encode;
 
-our ($cont,$id,$dig,$tok,$o);
+our ($cont,$id,$dig,$tok,$o,$fast);
 
 if ($cont) {
     tie %dic, 'DB_File', "__tmxuniq_$$.db", O_RDWR|O_CREAT , 0640, $DB_BTREE;
@@ -26,8 +26,8 @@ for my $file (@ARGV){
        { output => $o || "$file._" },
        sub {
            my $tu = shift;
-           $cid ++;
-           $tu->{-prop}{id}= $cid if $id;
+           $cid++;
+           $tu->{-prop}{id} = $cid if $id;
 
            my $key = join("|||", map { n($tu->{$_}{-seg}) } sort grep { !/^-/ } keys %$tu);
            my $digest = md5_hex(encode_utf8($key));
@@ -40,14 +40,13 @@ for my $file (@ARGV){
            }
 
            if ($dic{$digest}) {
-               $dic{$digest} .= "$cid;";
+               $dic{$digest} .= "$cid;" unless $fast;
                $rem ++;
                return undef
            } else {
                $dic{$digest} = "$cid;";
-               $tu->{-prop}{digest}=$digest if $dig;
+               $tu->{-prop}{digest} = $digest if $dig;
                return {%$tu} ; # used clone.. no idea why
-               return $tu
            }
        }
       );
@@ -63,18 +62,17 @@ for my $file (@ARGV){
 }
 untie %h;
 
-
 sub n {
     my $a = shift;
 
     $a =~ s/\.{6,}/...../g;
 
-    $a = tokenize({rs=>' '},$a) if $tok;
+    $a = tokenize( { rs => ' ' } => $a ) if $tok;
 
     $a =~ s/\s+/ /g;
     $a =~ s/ $//;
     $a =~ s/^ //;
-    $a;
+    return $a;
 }
 
 __END__

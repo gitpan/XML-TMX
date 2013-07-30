@@ -21,7 +21,7 @@ is_deeply($reader->{header},
           {
            'o-tmf' => 'plain text',
            adminlang => 'en',
-           creationtoolversion => '0.23',
+           creationtoolversion => '0.25',
            creationtool => 'XML::TMX::Writer',
            srclang => 'en',
            segtype => 'sentence',

@@ -51,6 +51,8 @@ sub file_contents_almost_identical {
 
   while (defined($l1 = <F1>) && defined($l2 = <F2>)) {
 
+      s/>\s*</></g        for ($l1, $l2);
+      s/(^\s*|\s*$)//g    for ($l1, $l2);
       s/"\d+T\d+Z"/"000"/ for ($l1, $l2);
 
       if ($l1 ne $l2) {

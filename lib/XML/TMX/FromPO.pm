@@ -99,6 +99,14 @@ sub rec_get_po {
             __processa($self, $file, $lang);
          }
       }
+      elsif($file =~ /(.*)\.(\w+)\.(po|messages)$/) {
+         my $lang = lc($lan1);
+         ## ??? my $lang = "\L$2";
+
+         if(!defined($self->{LANG}) || __check_lang($self, $lang)) {
+            __processa($self, $file, $lang);
+         }
+      }
       elsif(-d $file) {
          rec_get_po($self,$file,$lan1)
       }
@@ -128,9 +136,15 @@ sub parse_dir {
    # check if directory is readable
    die("$dir is not a readable directory\n") unless(-d $dir);
 
-   for my $file (<$dir/*.po>) {
-      if($file =~ /(\w+)\.po$/) {
+   for my $file ((<$dir/*.po>),(<$dir/*.messages>)) {
+      if($file =~ /(\w+)\.(po|messages)$/) {
          my $lang = "\L$1";
+
+         if(!defined($self->{LANG}) || __check_lang($self, $lang)) {
+            __processa($self, $file, $lang);
+         }
+      } elsif($file =~ /(.*)\.(\w+)\.(po|messages)$/) {
+         my $lang = "\L$2";
 
          if(!defined($self->{LANG}) || __check_lang($self, $lang)) {
             __processa($self, $file, $lang);

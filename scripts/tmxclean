@@ -9,6 +9,8 @@ use XML::TMX::Reader;
 our (
      $junk, # remove if one of the languages just have junk
      $output,  # output filename
+     $eq ,  # remove if seg(l1) = seg(l2)
+     $len , # remove if len(li) > 50 ∧ len(lj) > 2len(li)
      $v, $verbose
     );
 
@@ -32,12 +34,19 @@ sub cleaner {
     my $langs = shift;
     $processed++;
     my $remove = 0;
+    my %seg=();
+    my @len=();
     for my $k (keys %$langs) {
         next if $k =~ /^-/;
+        $remove = 1 if $eq    && $seg{$langs->{$k}{-seg}}++;
 
-        $remove = 1 if $junk  && $langs->{$k} =~ /^[-.,0-9\s]+$/;
-        $remove = 1 if $junk  && $langs->{$k} =~ /^\W+$/;
+        $remove = 1 if $junk  && $langs->{$k}{-seg} =~ /^[-.,0-9\s]+$/;
+        $remove = 1 if $junk  && $langs->{$k}{-seg} =~ /^\W*$/;
+        push(@len, length($langs->{$k}{-seg}));
     }
+    @len = sort{$a <=> $b} @len;
+    $remove = 1 if $len && $len[0] > 50 && $len[0]*2< $len[-1];
+
     $cleaned++ if $remove;
     printf STDERR "\rRemoved %d/%d (%.3f%%)...", $cleaned, $processed,
       100*$cleaned/$processed if $v && $processed%1000==0;
@@ -57,11 +66,14 @@ tmx-clean - clean TMX files ???
 
 =head1 SYNOPSIS
 
-   $ tmx-clean file.tmx  # ???
+  $ tmx-clean file.tmx  # ???
 
 =head1 DESCRIPTION
 
-???
+Removes the Translation units that
+
+ 1. have no letters...  (unless -junk=0)
+ 2. seg(L1) = seg(L2)   (if -eq)
 
 =head1 SEE ALSO
 

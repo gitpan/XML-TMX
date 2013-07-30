@@ -5,8 +5,9 @@
 our ($m);
 
 $m ||= 1000;
+my $tmp="/tmp/_tmxpdf_$$_.pdf";
 
-my $tmx=shift or die;
+my $tmx=shift or die("usage:\n\t$0 file.tmx\n");
 
 use strict;
 
@@ -18,8 +19,9 @@ if(not -f "$ENV{HOME}/.gwb/tmx.css"){
                  print F $_}
   close F;
 }
-system("prince -s $ENV{HOME}/.gwb/tmx.css $tmx _.pdf 2>/dev/null"); 
-system("xpdf -z width -cont -g 1500x1050 _.pdf");
+system("prince -s $ENV{HOME}/.gwb/tmx.css $tmx $tmp 2>/dev/null"); 
+system("xpdf -z width -cont -g 1500x1050 $tmp");
+unlink $tmp;
 
 __DATA__
 @charset "UTF-8";
@@ -48,6 +50,8 @@ tuv::before    {color: black; font-size:70%;  }
 tuv[lang]::before    { content:counter(num) " " attr(lang) " "; }
 tuv:lang(pt)::before { content:counter(num) " PT ";             }
 tuv:lang(en)::before { content:counter(num) " EN ";             }
+tuv:lang(en_GB)::before { content:counter(num) " EN ";             }
+tuv:lang(en_US)::before { content:counter(num) " EN ";             }
 
 seg {     }
 header{ display:none;     }

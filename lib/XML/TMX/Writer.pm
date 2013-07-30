@@ -6,7 +6,7 @@ use strict;
 use Exporter ();
 use vars qw($VERSION @ISA @EXPORT_OK);
 
-$VERSION = '0.23';
+$VERSION = '0.25';
 @ISA = 'Exporter';
 @EXPORT_OK = qw();
 
@@ -291,7 +291,7 @@ sub start_tmx {
 
     $self->_indent(1)->_endTag('header')->_nl;
 
-    $self->_startTag(1,'body')->_nl->_nl;
+    $self->_startTag(0,'body')->_nl->_nl;
 }
 
 sub _write_props {
@@ -406,7 +406,7 @@ sub add_tu {
         delete $tuv{"-note"};
     }
 
-    $self->_startTag(2,'tu', %opt)->_nl;
+    $self->_startTag(0,'tu', %opt)->_nl;
 
     ### write the prop s <prop type="x-name">problemas 23</prop>
     $self->_write_props(3, \%prop);
@@ -414,16 +414,16 @@ sub add_tu {
 
     for my $lang (sort keys %tuv) {
         my $cdata = 0;
-        $self->_startTag(3, 'tuv', 'xml:lang' => $lang)->_nl;
+        $self->_startTag(1, 'tuv', 'xml:lang' => $lang);
         if (ref($tuv{$lang}) eq "HASH") {
             $cdata++ if defined($tuv{$lang}{-iscdata});
             delete($tuv{$lang}{-iscdata}) if exists($tuv{$lang}{-iscdata});
 
-            $self->_write_props(4, $tuv{$lang}{-prop}) if exists $tuv{$lang}{-prop};
-            $self->_write_notes(4, $tuv{$lang}{-note}) if exists $tuv{$lang}{-note};
+            $self->_write_props(2, $tuv{$lang}{-prop}) if exists $tuv{$lang}{-prop};
+            $self->_write_notes(2, $tuv{$lang}{-note}) if exists $tuv{$lang}{-note};
             $tuv{$lang} = $tuv{$lang}{-seg} || "";
         }
-        $self->_startTag(4, 'seg');
+        $self->_startTag(0, 'seg');
         if ($verbatim) {
             $self->_write($tuv{$lang});
         } elsif ($cdata) {
@@ -433,10 +433,10 @@ sub add_tu {
         } else {
             $self->_characters($tuv{$lang});
         }
-        $self->_endTag('seg')->_nl;
-        $self->_indent(3)->_endTag('tuv')->_nl;
+        $self->_endTag('seg');
+        $self->_endTag('tuv')->_nl;
     }
-    $self->_indent(2)->_endTag('tu')->_nl->_nl;
+    $self->_endTag('tu')->_nl->_nl;
 }
 
 
@@ -450,7 +450,7 @@ Ends the TMX file, closing file handles if necessary.
 
 sub end_tmx {
     my $self = shift();
-    $self->_indent(1)->_endTag('body')->_nl;
+    $self->_endTag('body')->_nl;
     $self->_endTag('tmx')->_nl;
     close($self->{OUTPUT});
 }

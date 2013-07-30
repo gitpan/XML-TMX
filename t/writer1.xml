@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tmx version="1.4">
-  <header adminlang="en" creationdate="20120331T211355Z" creationid="foobar" creationtool="XML::TMX::Writer" creationtoolversion="0.23" datatype="plaintext" o-tmf="plain text" segtype="sentence" srclang="en">
+  <header adminlang="en" creationdate="20120331T211355Z" creationid="foobar" creationtool="XML::TMX::Writer" creationtoolversion="0.25" datatype="plaintext" o-tmf="plain text" segtype="sentence" srclang="en">
     <prop type="prop1">val1</prop>
     <prop type="prop2">val2</prop>
     <note>note1</note>
@@ -15,18 +15,14 @@
       <note>snote1</note>
       <note>snote2</note>
       <note>snote3</note>
-      <tuv xml:lang="en">
-        <prop type="a">b</prop>
+      <tuv xml:lang="en">        <prop type="a">b</prop>
         <prop type="c">d</prop>
         <note>a</note>
         <note>b</note>
         <note>c</note>
         <note>d</note>
-        <seg>some text</seg>
-      </tuv>
-      <tuv xml:lang="pt">
-        <seg>algum texto</seg>
-      </tuv>
+        <seg>some text</seg>   </tuv>
+      <tuv xml:lang="pt"> <seg>algum texto</seg> </tuv>
     </tu>
 
   </body>

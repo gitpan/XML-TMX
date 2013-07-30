@@ -1,5 +1,11 @@
 Revision history for Perl extension XML::TMX.
 
+0.25   Tue Jul 30 16:06:58 WEST 2013
+       - tmx2tmx -cat : fix a bug related with a missing ":utf8"
+       - tmxclean -len: remove tu if len > 50 and len-min * 2 < len-max
+       - tmxclean -eq:  remove tu if equal ( seg(l1)=seg(l2) )
+       - output formatting of the TMX slightly changed (tu = lines/5) 
+
 0.24   Thu Nov 29 11:51:03 WET 2012
        - Require Perl v5.10
 

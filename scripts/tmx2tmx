@@ -76,10 +76,10 @@ Select a bunch of languages:
 
 =cut
 
-toTrados() if ($toTrados);
-clean()    if ($clean);
-cat()      if ($cat);
-selectl()  if ($select);
+toTrados() if $toTrados;
+clean()    if $clean;
+cat()      if $cat;
+selectl()  if $select;
 
 die "No option supplied\n";
 
@@ -205,10 +205,11 @@ sub cat {
         @files = map { chomp; $_ } <>;
     }
 
+    binmode STDOUT, ":utf8";
     _join_and_print_headers(@files);
 
     my $file = shift @files;
-    open F, $file or die "Cannot open file: $file\n";
+    open F, "<:utf8", $file or die "Cannot open file: $file\n";
     while (<F>) {
         last if m!<body!;
     }
@@ -220,7 +221,7 @@ sub cat {
     close F;
 
     for $file (@files) {
-        open F, $file or die "Cannot open file: $file\n";
+        open F, "<:utf8", $file or die "Cannot open file: $file\n";
         print "<!-- FILE: $file -->\n";
         while (<F>) {
             last if m!<body!;
